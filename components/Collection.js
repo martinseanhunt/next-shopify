@@ -15,6 +15,15 @@ const Collection = ({ handle }) => {
   // sure inventory data is always up to date.
   useRefetchQuery(refetch)
 
+  // The big UX decision here and with a statically generated ecommerce platform in general is...
+  // how do we want to handle the small subset of users who will arrive at stale data? 
+  // We can either let them see the stale data unil they refresh the page so their experience is maximally
+  // smooth but has the potentiall to be out of date, Or can siltenlyrefetch the data client side (as above)
+  // and update it if it's changed. If using the above strategy would it be worth faking a very quick loading
+  // state once the data has arrived which would stop the user having the impression of the data suddenly changing on them.
+  // This would be a good discussion point as there are trade offs all around and we may want to use different 
+  // solutions on a case by case basis.
+
   const collection = data && data.collectionByHandle
   const products = collection && collection.products.edges
 
