@@ -3,16 +3,16 @@ import Link from 'next/link'
 import { initWithQuery } from '../lib/apolloClient'
 import Collection, { COLLECTION_QUERY } from '../components/Collection'
 
-const collectionHandle = 'frontpage'
+const collectionHandle = 'new-collection'
 
-const Home = () => {
+const NewCollection = () => {  
   return (
     <div>
       <Collection handle={collectionHandle}/>
-      <Link href="/newcollection"><a>New collection</a></Link>
+      <Link href="/"><a>Home</a></Link>
     </div>
   )
 }
 
 export const getStaticProps = initWithQuery(COLLECTION_QUERY, { handle: collectionHandle })
-export default Home
+export default NewCollection
