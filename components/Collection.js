@@ -42,8 +42,6 @@ const Collection = ({ handle }) => {
           <strong>{node.variants.edges[0].node.priceV2.amount}</strong>
         </div>
       )) : null}
-
-      <button onClick={() => refetch()}>refetch</button>
     </div>
   )
 }
