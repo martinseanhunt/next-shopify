@@ -5,7 +5,7 @@ import useRefetchQuery from '../hooks/useRefetchQuery'
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 
   // and no network request will be made.
-  const { data, refetch } = useQuery(
+  const { data, loading, refetch } = useQuery(
     COLLECTION_QUERY, 
     { variables: { handle } }
   )
@@ -18,13 +18,19 @@ const Collection = ({ handle }) => {
   // The big UX decision here and with a statically generated ecommerce platform in general is...
   // how do we want to handle the small subset of users who will arrive at stale data? 
   // We can either let them see the stale data unil they refresh the page so their experience is maximally
-  // smooth but has the potentiall to be out of date, Or can siltenlyrefetch the data client side (as above)
+  // smooth but has the potential to be out of date, Or we can siltenly refetch the data client side (as above)
   // and update it if it's changed. If using the above strategy would it be worth faking a very quick loading
-  // state once the data has arrived which would stop the user having the impression of the data suddenly changing on them.
+  // state once new data has arrived which would stop the user having the impression of the data suddenly changing on them.
   // This would be a good discussion point as there are trade offs all around and we may want to use different 
-  // solutions on a case by case basis.
+  // solutions on a case by case basis. Actually... I could make new items fade in with a css trainsition... TODO
 
-  const collection = data && data.collectionByHandle
+  const collection = data && data.collectionByHandle  
+
+  // TODO: Loading and 404
+  if(!collection) return loading
+    ? <div>Loading...</div>
+    : <div>Collection not found</div>
+
   const products = collection && collection.products.edges
 
   return (
@@ -82,6 +88,17 @@ export const COLLECTION_QUERY = gql`
           } 
         }
       }
+    }
+  }
+`
+
+export const COLLECTIONS_QUERY = gql`
+  query colletions { 
+    collections(first: 250) { 
+      edges { node { 
+        title
+        handle 
+      } }
     }
   }
 `
