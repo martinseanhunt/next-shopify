@@ -17,7 +17,7 @@ const ProductCard = ({ product, collection }) => {
     : `£${parseFloat(minVariantPrice.amount)} - ${parseFloat(maxVariantPrice.amount)}`
 
   return (
-    <Link href={`/collection/${collection}/${product.handle}`}>
+    <Link href={`/${collection}/${product.handle}`}>
       <a>
         <article>
           <ImageContainer>

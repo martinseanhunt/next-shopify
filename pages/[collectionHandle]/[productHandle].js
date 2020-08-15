@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
 
-import { initWithQueries, queryForStaticPaths } from '../../../lib/apolloClient'
-import { COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY } from '../../../components/Collection'
-import ProductDetails, { PRODUCT_BY_HANDLE_QUERY } from '../../../components/ProductDetails'
+import { initWithQueries, queryForStaticPaths } from '../../lib/apolloClient'
+import { COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY } from '../../components/Collection'
+import ProductDetails, { PRODUCT_BY_HANDLE_QUERY } from '../../components/ProductDetails'
 
 const Product = () => {
   const router = useRouter()
   const { 
-    handle: collectionHandle, 
+    collectionHandle, 
     productHandle 
   } = router.query
 
@@ -27,7 +27,7 @@ export const getStaticPaths = async () => {
     ...acc,
     ...collection.products.edges.map(({ node: product }) => ({
       params: {
-        handle: collection.handle,
+        collectionHandle: collection.handle,
         productHandle: product.handle
       }
     }))

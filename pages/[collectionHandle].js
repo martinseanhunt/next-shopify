@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router'
 
-import { initWithQueries, queryForStaticPaths } from '../../lib/apolloClient'
-import Collection, { COLLECTION_QUERY, COLLECTIONS_QUERY } from '../../components/Collection'
+import { initWithQueries, queryForStaticPaths } from '../lib/apolloClient'
+import Collection, { COLLECTION_QUERY, COLLECTIONS_QUERY } from '../components/Collection'
 
 const CollectionPage = () => {
   const router = useRouter()
-  const { handle } = router.query
+  const { collectionHandle } = router.query
 
-  return <Collection handle={handle}/>
+  return <Collection handle={collectionHandle}/>
 }
 
 export const getStaticPaths = async () => {
@@ -15,7 +15,7 @@ export const getStaticPaths = async () => {
   const collections = res.data.collections.edges
 
   const paths = collections.map(({ node }) => ({
-    params: { handle: node.handle },
+    params: { collectionHandle: node.handle },
   }))
 
   return { paths, fallback: true }
@@ -24,7 +24,7 @@ export const getStaticPaths = async () => {
 export const getStaticProps = ({ params }) => initWithQueries([
   {
     query: COLLECTION_QUERY, 
-    variables: { handle: params.handle }
+    variables: { handle: params.collectionHandle }
   }
 ])
 
