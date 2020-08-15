@@ -9,6 +9,8 @@ const Collection = ({ handle }) => {
     COLLECTION_QUERY, 
     { variables: { handle } }
   )
+
+  console.log(data)
   
   // Silently refetch the query after initial render so we show fresh data even in between builds
   // We may not actually want to use this here but I'm laying the groundwork to be able to make 
