@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { initWithQueries } from '../lib/apolloClient'
-import Collection, { COLLECTION_QUERY, COLLECTIONS_QUERY } from '../components/Collection'
+import Collection, { COLLECTION_QUERY } from '../components/Collection'
 
 const collectionHandle = 'frontpage'
 
@@ -18,8 +18,7 @@ export const getStaticProps = () => initWithQueries([
   {
     query: COLLECTION_QUERY, 
     variables: { handle: collectionHandle }
-  },
-  { query: COLLECTIONS_QUERY }
+  }
 ])
 
 export default Home
