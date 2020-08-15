@@ -7,7 +7,7 @@ import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 
   // and no network request will be made.
-  const { data, loading, refetch } = useQuery(
+  const { data, refetch } = useQuery(
     COLLECTION_QUERY, 
     { variables: { handle } }
   )
@@ -30,26 +30,26 @@ const Collection = ({ handle }) => {
 
   const collection = data && data.collectionByHandle  
 
-  // TODO: Loading and 404
-  if(!collection) return loading
-    ? <div>Loading...</div>
-    : <div>Collection not found</div>
+  // TODO: 404
+  if(!collection) return <div>Collection not found</div>
 
   const products = collection && collection.products.edges
-
-  console.log(products)
 
   return (
     <CollectionSection>
       <CollectionMeta>
         <h2>{collection.title}</h2>
         {/* TODO: Filters */}
-        <span><b>103</b> Products</span>
+        <span><b>{products.length}</b> Products</span>
       </CollectionMeta>
 
       <ProductGrid>
         {products.length > 0 && products.map(({ node }) =>
-          <ProductCard product={node} key={node.id} />
+          <ProductCard 
+            collection={collection.handle}
+            product={node} 
+            key={node.handle} 
+          />
         )}
       </ProductGrid>
     </CollectionSection>
@@ -85,6 +85,7 @@ export const COLLECTION_QUERY = gql`
   query Collection($handle: String!) {
     collectionByHandle(handle: $handle){
       title,
+      handle
       image { originalSrc },
       products(first: 250) {
         pageInfo { hasNextPage }
@@ -102,14 +103,33 @@ export const COLLECTION_QUERY = gql`
 export const COLLECTIONS_QUERY = gql`
   query Colletions { 
     collections(first: 250) { 
-      edges { node { 
-        title
-        handle 
-      } }
+      edges { 
+        node { 
+          title
+          handle 
+        } 
+      }
+    }
+  }
+`
+
+export const COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY = gql`
+  query CollectionsWithProdIds {
+    collections(first: 250) {
+      edges {
+        node {
+          handle
+          products(first: 250) {
+            edges { 
+              node { 
+                handle
+              } 
+            }
+          }
+        }
+      }
     }
   }
 `
 
 export default Collection
-
-

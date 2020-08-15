@@ -1,4 +1,24 @@
-import { gql } from '@apollo/client'
+import { useQuery, gql } from '@apollo/client'
+
+import useRefetchQuery from '../hooks/useRefetchQuery'
+
+const ProductDetails = ({ productHandle }) => {
+  const { data, refetch } = useQuery(PRODUCT_BY_HANDLE_QUERY, { 
+    variables: { handle: productHandle }
+  })
+
+  console.log(data)
+
+  useRefetchQuery(refetch)
+
+  const product = data && data.productByHandle
+
+  if(!product) return <div>Product not found</div>
+
+  return (
+    <div>{product.title}</div>
+  )
+}
 
 export const PRODUCT_FRAGMENT = gql`
   fragment ProductFragment on Product {
@@ -45,3 +65,14 @@ export const PRODUCT_FRAGMENT = gql`
     }
   }
 `
+
+export const PRODUCT_BY_HANDLE_QUERY = gql`
+  query ProductByHandle($handle: String!) { 
+    productByHandle(handle: $handle) { 
+      ...ProductFragment
+    }
+  }
+  ${PRODUCT_FRAGMENT}
+`
+
+export default ProductDetails

@@ -69,6 +69,11 @@ const GlobalStyle = createGlobalStyle`${({ theme }) => `
   }
 
   b, strong { font-weight: ${theme.fonts.weights.bold} }
+
+  a { 
+    color: inherit;
+    text-decoration: inherit;
+  }
 `}`
 
 

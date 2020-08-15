@@ -1,13 +1,13 @@
 import { gql } from '@apollo/client'
 import styled from 'styled-components'
+import Link from 'next/link'
 
-const ProductCard = ({ product }) => {  
+const ProductCard = ({ product, collection }) => {  
   const { 
     images,
     priceRange: { minVariantPrice, maxVariantPrice },
     title,
     description,
-    variants
   } = product
 
   const image = images.edges.length && images.edges[0].node
@@ -17,14 +17,18 @@ const ProductCard = ({ product }) => {
     : `£${parseFloat(minVariantPrice.amount)} - ${parseFloat(maxVariantPrice.amount)}`
 
   return (
-    <article>
-      <ImageContainer>
-        {image ? <img src={image.transformedSrc} alt={image.altText} /> : null}
-      </ImageContainer>
-      <h3>{title}</h3>
-      <strong>{price}</strong>
-      <span>{description}</span>
-    </article>
+    <Link href={`/collection/${collection}/${product.handle}`}>
+      <a>
+        <article>
+          <ImageContainer>
+            {image ? <img src={image.transformedSrc} alt={image.altText} /> : null}
+          </ImageContainer>
+          <h3>{title}</h3>
+          <strong>{price}</strong>
+          <span>{description}</span>
+        </article>
+     </a>
+    </Link>
   )
 }
 

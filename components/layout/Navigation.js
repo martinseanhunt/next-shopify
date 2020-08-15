@@ -16,12 +16,15 @@ const Navigation = ({ children }) => {
       <CatalogTitle>Catalog</CatalogTitle>
       <CollectionTitle>Collections</CollectionTitle>
       <Nav>
-        {collections && collections.map(({ node }) =>  
-          <Link key={node.handle} href={`/collection/${node.handle}`}>
-            <a className={node.handle === handle ? 'active' : undefined}>
-              {node.title}
-            </a>
-          </Link>
+        {collections && collections
+          .filter(({ node }) => node.handle !== 'featured')
+          .map(({ node }) => (
+            <Link key={node.handle} href={`/collection/${node.handle}`}>
+              <a className={node.handle === handle ? 'active' : undefined}>
+                {node.title}
+              </a>
+            </Link>
+          )
         )}
       </Nav>
     </Content>

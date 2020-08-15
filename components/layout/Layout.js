@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import Link from 'next/link'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
@@ -6,7 +7,9 @@ import Navigation from './Navigation'
 const Layout = ({ children }) => (
   <Container>
     <Sidebar>
-      <Logo light/>
+      <Link href="/">
+        <a><Logo light/></a>
+      </Link>
       <Navigation />
     </Sidebar>
     <Main>
