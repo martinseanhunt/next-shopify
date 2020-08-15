@@ -10,6 +10,7 @@ const Layout = ({ children }) => (
       <Navigation />
     </Sidebar>
     <Main>
+      <Cart>Cart Icon</Cart>
       {children}
     </Main>
   </Container>
@@ -29,6 +30,13 @@ const Sidebar = styled.header`
 
 const Main = styled.main`
   background: ${({ theme }) => theme.colors.gooderyBeige};
+  padding 46px;
+`
+
+// TODO: Component for this 
+const Cart = styled.div`
+  height: 30px;
+  text-align right;
 `
 
 export default Layout

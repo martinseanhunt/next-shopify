@@ -6,12 +6,7 @@ import Collection, { COLLECTION_QUERY } from '../components/Collection'
 const collectionHandle = 'frontpage'
 
 const Home = () => {
-  return (
-    <div>
-      <Collection handle={collectionHandle}/>
-      <Link href="/newcollection"><a>New collection</a></Link>
-    </div>
-  )
+  return <Collection handle={collectionHandle}/>
 }
 
 export const getStaticProps = () => initWithQueries([

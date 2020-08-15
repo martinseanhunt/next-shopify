@@ -14,7 +14,8 @@ const theme = {
     white: '#fff',
     darkGrey: '#212125',
     gooderyBeige: '#f5f0ea',
-    lightGrey: '#F6F6F6'
+    lightGrey: '#F6F6F6',
+    medGrey: '#C8C8C8'
   },
   fonts: {
     base: {

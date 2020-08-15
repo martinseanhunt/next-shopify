@@ -1,6 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
+import styled from 'styled-components'
 
 import useRefetchQuery from '../hooks/useRefetchQuery'
+import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
 
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 
@@ -35,22 +37,52 @@ const Collection = ({ handle }) => {
 
   const products = collection && collection.products.edges
 
+  console.log(products)
+
   return (
-    <div>
-      <h2>{collection.title}</h2>
-      {products.length ? products.map(({ node }) => (
-        <div key={node.id}>
-          <h3>{node.title}</h3>
-          <strong>{node.variants.edges[0].node.priceV2.amount}</strong>
-        </div>
-      )) : null}
-    </div>
+    <CollectionSection>
+      <CollectionMeta>
+        <h2>{collection.title}</h2>
+        {/* TODO: Filters */}
+        <span><b>103</b> Products</span>
+      </CollectionMeta>
+
+      <ProductGrid>
+        {products.length > 0 && products.map(({ node }) =>
+          <ProductCard product={node} key={node.id} />
+        )}
+      </ProductGrid>
+    </CollectionSection>
   )
 }
 
-// TODO tidy up query. Also Do I want to split out product and collection? 
+const CollectionSection = styled.section`
+  padding: 30px;
+`
+
+const CollectionMeta = styled.section`${({ theme }) => `
+  color: ${theme.colors.medGrey};
+  display: flex; 
+  justify-content: space-between;
+
+  b {
+    font-weight: ${theme.fonts.weights.bold};
+  }
+
+  h2 {
+    font-size: ${theme.fonts.s.fontSize};
+    font-weight: ${theme.fonts.weights.medium};
+  }
+`}`
+
+const ProductGrid = styled.section`
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+  grid-gap: 40px;
+`
+
 export const COLLECTION_QUERY = gql`
-  query collection($handle: String!) {
+  query Collection($handle: String!) {
     collectionByHandle(handle: $handle){
       title,
       image { originalSrc },
@@ -58,42 +90,17 @@ export const COLLECTION_QUERY = gql`
         pageInfo { hasNextPage }
         edges { 
           node { 
-            id
-            handle 
-            title
-            description
-            descriptionHtml
-            images(first: 250) {
-              edges {
-                node {
-                  originalSrc
-                }
-              }
-            }
-            priceRange {
-              minVariantPrice { amount currencyCode }
-              maxVariantPrice { amount currencyCode }
-            }
-            variants(first: 250) {
-              edges {
-                node {
-                  availableForSale
-                  priceV2{ amount, currencyCode }
-                  id
-                  sku
-                  title
-                }
-              }
-            }
+            ...ProductCardFragment
           } 
         }
       }
     }
   }
+  ${PRODUCT_CARD_FRAGMENT}
 `
 
 export const COLLECTIONS_QUERY = gql`
-  query colletions { 
+  query Colletions { 
     collections(first: 250) { 
       edges { node { 
         title
