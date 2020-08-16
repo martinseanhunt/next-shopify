@@ -8,47 +8,42 @@ const theme = {
   },
   layout: {
     maxWidth: 1200,
-    gutters: 15
+    gutters: 15,
+    verticalRythm: 30
   },
   colors: {
     white: '#fff',
-    darkGrey: '#212125',
+    transparentWhite: 'rgba(255,255,255,0.3)',
+    lessTransparentWhite: 'rgba(255,255,255,0.7)',
     gooderyBeige: '#f5f0ea',
-    lightGrey: '#F6F6F6',
-    medGrey: '#C8C8C8'
+    beigeHighlight: '#ede4d8',
+    lightGrey: '#e6e6e6',
+    medGrey: '#d4d4d4',
+    medDarkGrey: '#9c9c9c',
+    darkGrey: '#1F1F1F',
+    transparentBlack: 'rgba(0,0,0,0.2)',
+    darkTransparentBlack: 'rgba(0,0,0,0.6)'
   },
   fonts: {
     base: {
       fontSize: '10px',
       fontFamily: '"Roboto", sans-serif',
     },
-    xs: '1.1rem', //not used yet
     s: {
-      fontSize: '1.3rem',
-      lineHeight: 1.6
+      fontSize: '1.1rem',
     },
     m: {
-      fontSize: '1.7rem',
+      fontSize: '1.4rem',
+    },
+    ml: {
+      fontSize: '1.6rem',
     },
     l: {
-      fontSize: '2.4rem'
+      fontSize: '2rem',
+      lineHeight: 1.5
     },
     xl: { 
-      fontSize: '14rem',
-      letterSpacing: '-.5rem',
-      lineHeight: 0.8,
-      responsive: {
-        xs: { fontSize: '4.8rem' },
-        s: {
-          fontSize: '6rem',
-          letterSpacing: '-.15rem',
-          lineHeight: 1,
-        },
-        m: {
-          fontSize: '10rem',
-          lineHeight: 0.9,
-        },
-      }
+      fontSize: '6rem',
     },
     weights: {
       heavyBold: 900,

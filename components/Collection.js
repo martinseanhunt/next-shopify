@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import useRefetchQuery from '../hooks/useRefetchQuery'
 import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
+import Hero from './Hero'
 
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 
@@ -35,12 +36,23 @@ const Collection = ({ handle }) => {
 
   const products = collection && collection.products.edges
 
+  // NOTE: Using shopify image transformations doesn't seem to hold image qaulity as well as I'd like. 
+  // In production would think of another solutionbecause it's not good enough. 
+
   return (
     <CollectionSection>
+      {collection.image && (
+        <Hero 
+          title={collection.title} 
+          description={collection.description}
+          background={collection.image.transformedSrc}  
+        />
+      )}
+
       <CollectionMeta>
         <h2>{collection.title}</h2>
         {/* TODO: Filters */}
-        <span><b>{products.length}</b> Products</span>
+        <span><b>{products.length}</b> products</span>
       </CollectionMeta>
 
       <ProductGrid>
@@ -57,16 +69,18 @@ const Collection = ({ handle }) => {
 }
 
 const CollectionSection = styled.section`
-  padding: 30px;
+  margin-bottom: ${({ theme }) => theme.layout.verticalRythm}px;
 `
 
 const CollectionMeta = styled.section`${({ theme }) => `
-  color: ${theme.colors.medGrey};
+  color: ${theme.colors.medDarkGrey};
   display: flex; 
   justify-content: space-between;
+  padding-bottom: 20px;
 
   b {
     font-weight: ${theme.fonts.weights.bold};
+    color: ${theme.colors.darkGrey}
   }
 
   h2 {
@@ -78,15 +92,19 @@ const CollectionMeta = styled.section`${({ theme }) => `
 const ProductGrid = styled.section`
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-  grid-gap: 40px;
+  column-gap: 30px;
+  row-gap: 40px;
 `
 
 export const COLLECTION_QUERY = gql`
   query Collection($handle: String!) {
     collectionByHandle(handle: $handle){
-      title,
+      title
       handle
-      image { originalSrc },
+      description(truncateAt: 240)
+      image { 
+        transformedSrc(maxWidth: 1200) 
+      }
       products(first: 250) {
         pageInfo { hasNextPage }
         edges { 

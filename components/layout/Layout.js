@@ -1,45 +1,84 @@
 import styled from 'styled-components'
 import Link from 'next/link'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
 
+// TODO: Refactor / compose
+
 const Layout = ({ children }) => (
   <Container>
-    <Sidebar>
+    <Header>
       <Link href="/">
-        <a><Logo light/></a>
+        <a><Logo adjustTop={7} /></a>
       </Link>
-      <Navigation />
-    </Sidebar>
-    <Main>
-      <Cart>Cart Icon</Cart>
+
+      <Menu>
+        <Navigation />
+        <Cart>
+          <FontAwesomeIcon 
+            icon={faShoppingBasket} 
+            title="Shopping Basket Icon"
+          />
+          <span>0</span>
+        </Cart>
+      </Menu>
+    </Header>
+    <main>
       {children}
-    </Main>
+    </main>
+    <Footer>
+      <Link href="/">
+        <a>
+          <Logo 
+            size={100}
+            adjustTop={-9}
+          />
+        </a>
+      </Link>
+    </Footer>
   </Container>
 )
 
-const Container = styled.div`
-  width: 100%; 
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 300px 1fr;
+const Container = styled.div`${({ theme }) => `
+  max-width: ${theme.layout.maxWidth + theme.layout.gutters}px;
+  margin: 0 auto;
+  padding: 0 ${theme.layout.gutters}px;
+`}`
+
+const Header = styled.header`${({ theme }) => `
+  padding: 40px 0 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom : 1px solid ${theme.colors.medGrey}; 
+  margin-bottom: ${theme.layout.verticalRythm}px;
+`}`
+
+const Menu = styled.main`
+  display: flex;
+  align-items: center;
 `
 
-const Sidebar = styled.header`
-  background: ${({ theme }) => theme.colors.darkGrey};
-  padding: 30px 20px;
-`
+const Cart = styled.div`${({ theme }) => `
+  font-size: ${theme.fonts.ml.fontSize};
 
-const Main = styled.main`
-  background: ${({ theme }) => theme.colors.gooderyBeige};
-  padding 46px;
-`
+  span {
+    font-size: ${theme.fonts.m.fontSize};
+    font-weight: ${theme.fonts.weights.medium};
+    padding-left: 5px;
+  }
+`}`
 
-// TODO: Component for this 
-const Cart = styled.div`
-  height: 30px;
-  text-align right;
-`
+const Footer = styled.header`${({ theme }) => `
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  border-top : 1px solid ${theme.colors.medGrey}; 
+  margin: ${theme.layout.verticalRythm * 2}px 0 60px 0;
+  padding-top: ${theme.layout.verticalRythm}px;
+`}`
 
 export default Layout
