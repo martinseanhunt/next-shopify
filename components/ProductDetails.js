@@ -1,15 +1,38 @@
 import { useState } from 'react'
-import { useQuery, useLazyQuery, gql } from '@apollo/client'
+import { useQuery, useMutation, gql } from '@apollo/client'
 
+import { useCartContext } from '../contexts/cart/CartContext'
 import useRefetchQuery from '../hooks/useRefetchQuery'
+import { CREATE_CART_MUTATION} from './Cart'
+
+// TODO: This whole component needs refactoring, prioritising speed over
+// refinement at this point ;) 
 
 const ProductDetails = ({ productHandle, collectionHandle }) => {
+  const { state, dispatch } = useCartContext()
+
   const { data, refetch } = useQuery(PRODUCT_BY_HANDLE_QUERY, { 
     variables: { 
       handle: productHandle,
       selectedOptions: [{ name: '', value: '' }]
     }
   })
+
+  // TODO: move this
+  const onCreateCart = data => {
+    dispatch({ 
+      type: 'CREATE_CART',
+      payload: data.checkoutCreate.checkout 
+    })
+  }
+
+  const [createCart, { loading: createCartLoading }] = useMutation(
+    CREATE_CART_MUTATION,
+    { onCompleted: onCreateCart }
+  );
+
+  // TODO: Can improve this by getting the variant with a lazyQuery and using the node()
+  // query to do the product lookup
 
   // We can't use the apollo loading state for this because we don't 
   // only want to show the loading state when we've refetched from an 
@@ -25,7 +48,21 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     { ...optionsMap, [opt.name]: opt.values[0]  }
   ), {}))
 
-  const addToCart = () => {
+  const addToCart = (variant) => {
+    if(state.id) {
+      
+    } else {
+      createCart({
+        variables: {
+          input: { 
+            lineItems: [{
+              quantity: 1, // TODO
+              variantId: variant.id
+            }]
+          }
+        }
+      })
+    }
   }
 
   const onOptionChange = async ({ target: { name, value } }) => {
@@ -49,6 +86,10 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
   const variants = product.variants.edges
   const selectedVariant = product.variantBySelectedOptions || variants[0].node
+
+  // We need to handle invalid variants e.g. if a particular combination of 
+  // options doesn't exist in the shopify admin. This is an edge case but it's
+  // still worth safeguarding against. 
   const invalidVariant = !loadingVariant && !Object.values(selectedOptions)
     .every(option => selectedVariant.title.includes(option))
 
@@ -78,8 +119,11 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
         </label>
       ))}
     
-      <button onClick={addToCart}>
-        Add to card
+      <button 
+        onClick={() => addToCart(selectedVariant)}
+        disabled={createCartLoading}
+      >
+        Add{createCartLoading && 'ing'} to cart
       </button>
     </>
   )

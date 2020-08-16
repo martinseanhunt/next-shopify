@@ -1,10 +1,9 @@
 import styled from 'styled-components'
 import Link from 'next/link'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
+import Cart from '../Cart'
 
 // TODO: Refactor / compose
 
@@ -17,13 +16,7 @@ const Layout = ({ children }) => (
 
       <Menu>
         <Navigation />
-        <Cart>
-          <FontAwesomeIcon 
-            icon={faShoppingBasket} 
-            title="Shopping Basket Icon"
-          />
-          <span>0</span>
-        </Cart>
+        <Cart />
       </Menu>
     </Header>
     <main>
@@ -61,16 +54,6 @@ const Menu = styled.main`
   display: flex;
   align-items: center;
 `
-
-const Cart = styled.div`${({ theme }) => `
-  font-size: ${theme.fonts.ml.fontSize};
-
-  span {
-    font-size: ${theme.fonts.m.fontSize};
-    font-weight: ${theme.fonts.weights.medium};
-    padding-left: 5px;
-  }
-`}`
 
 const Footer = styled.header`${({ theme }) => `
   display: flex;

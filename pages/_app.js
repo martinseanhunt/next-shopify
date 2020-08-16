@@ -1,5 +1,4 @@
 import Head from 'next/head'
-
 import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../lib/apolloClient'
 import { ThemeProvider } from 'styled-components'
@@ -7,6 +6,7 @@ import { ThemeProvider } from 'styled-components'
 import theme from '../styles/theme'
 import GlobalStyle from '../styles/GlobalStyle'
 
+import CartContextProvider from '../contexts/cart/CartContext'
 import Layout from '../components/layout/Layout'
 
 const MyApp = ({ Component, pageProps }) => {
@@ -23,9 +23,11 @@ const MyApp = ({ Component, pageProps }) => {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <ApolloProvider client={apolloClient}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <CartContextProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </CartContextProvider>
         </ApolloProvider>
       </ThemeProvider>
     </>
