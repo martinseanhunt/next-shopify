@@ -39,7 +39,11 @@ export const getStaticPaths = async () => {
 export const getStaticProps = ({ params }) => initWithQueries([
   {
     query: PRODUCT_BY_HANDLE_QUERY, 
-    variables: { handle: params.productHandle }
+    variables: { 
+      handle: params.productHandle,
+      // TODO: import these defaults
+      selectedOptions: [{ name: '', value: '' }]
+    }
   }
 ])
 

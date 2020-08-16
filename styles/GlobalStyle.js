@@ -67,7 +67,7 @@ const GlobalStyle = createGlobalStyle`${({ theme }) => `
     font-size: ${theme.fonts.s.fontSize};
     line-height: ${theme.fonts.s.lineHeight};
     background: ${theme.colors.gooderyBeige};
-    color: background: ${theme.colors.darkGrey};
+    color: ${theme.colors.darkGrey};
   }
 
   b, strong { font-weight: ${theme.fonts.weights.bold} }

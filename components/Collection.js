@@ -50,9 +50,9 @@ const Collection = ({ handle }) => {
       )}
 
       <CollectionMeta>
-        <h2>{collection.title}</h2>
+        <h2><b>{products.length}</b> {collection.title}</h2>
         {/* TODO: Filters */}
-        <span><b>{products.length}</b> products</span>
+        <span>Order by: <b>new</b>(todo)</span>
       </CollectionMeta>
 
       <ProductGrid>
