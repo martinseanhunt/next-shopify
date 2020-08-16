@@ -33,19 +33,24 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
       ...selectedOptions,
       [name]: value
     }
-    
+
+    setSelectedOptions(newState)
     setLoadingVariant(true)
+
     // Get the associated variant from shopify and update selected variant in state
     await refetch({ 
       handle: productHandle,
       selectedOptions: Object.keys(newState)
         .map(key => ({ name: key, value: newState[key]}))
     })
+
     setLoadingVariant(false)
   }
 
   const variants = product.variants.edges
   const selectedVariant = product.variantBySelectedOptions || variants[0].node
+  const invalidVariant = !loadingVariant && !Object.values(selectedOptions)
+    .every(option => selectedVariant.title.includes(option))
 
   return (
     <>
@@ -53,7 +58,9 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
       {loadingVariant 
         ? '...' // TODO: loading spinner
-        : `£${selectedVariant.priceV2.amount}`
+        : invalidVariant 
+          ? `This option is currently unavailable`
+          : `£${selectedVariant.priceV2.amount}`
       }
       
       {variants.length > 1 && product.options.map(({ name, values }) => (
