@@ -48,22 +48,36 @@ const Cart = () => {
     
   }, [state.notifyItemAdded])
 
+  // TODO: FIX!
+  const cartIcon = (
+    <>
+    <FontAwesomeIcon icon={faShoppingBasket} />
+    <span>
+      {/* TODO: Loading spinner */}
+      {cartLoading 
+        ? '...' 
+        : state.lineItems ? state.lineItems.edges.length : '0'
+      }
+    </span>
+    </>
+  )
+
   return (
     <CartContainer>
       <CartNotification visible={state.notifyItemAdded}>
         Item added to cart 🙌🏼
       </CartNotification>
       
-      <a href={state.webUrl} disabled={!state.webUrl}>
-        <FontAwesomeIcon icon={faShoppingBasket} />
-        <span>
-          {/* TODO: Loading spinner */}
-          {cartLoading 
-            ? '...' 
-            : state.lineItems ? state.lineItems.edges.length : '0'
-          }
-        </span>
-      </a>
+      {state.webUrl ? (
+        <a href={state.webUrl}>
+          {cartIcon}
+        </a>
+      ) : (
+        <div>
+          {cartIcon}
+        </div>
+      )}
+      
     </CartContainer>
   )
 }
