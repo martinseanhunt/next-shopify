@@ -66,16 +66,20 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     }
 
     if(id) {
+      const newLineItems = lineItems.edges.map(({ node }) => ({
+        variantId: node.variant.id,
+        quantity: newItem.variantId === node.variant.id 
+          ? node.quantity + newItem.quantity
+          : node.quantity
+      }))
+
       updateCart({
         variables: {
           checkoutId: id,
-          lineItems: [
-            ...lineItems.edges.map(({ node }) => ({
-              variantId: node.variant.id,
-              quantity: node.quantity
-            })),
-            newItem
-          ]
+          lineItems: newLineItems
+            .some(({ variantId }) => variantId === newItem.variantId)
+              ? newLineItems
+              : [...newLineItems, newItem]
         }
       })
     } else {
