@@ -25,6 +25,7 @@ const Cart = () => {
 
   // If we have a cart in localstorage and no current cart lets initialize it
   useEffect(() => {
+    console.log('loading from local')
     const localCart = typeof window === 'object'
       && localStorage.getItem('cart')
       && JSON.parse(localStorage.getItem('cart'))
@@ -38,10 +39,21 @@ const Cart = () => {
         }))
       }
     })
-  },[])
+  }, [])
+
+  useEffect(() => {
+    if(state.notifyItemAdded) setTimeout(() => 
+      dispatch({ type: 'SET_NOTIFY_ITEM_ADDED', payload: false })
+    , 3000)
+    
+  }, [state.notifyItemAdded])
 
   return (
     <CartContainer>
+      <CartNotification visible={state.notifyItemAdded}>
+        Item added to cart 🙌🏼
+      </CartNotification>
+      
       <a href={state.webUrl} disabled={!state.webUrl}>
         <FontAwesomeIcon icon={faShoppingBasket} />
         <span>
@@ -58,12 +70,31 @@ const Cart = () => {
 
 const CartContainer = styled.div`${({ theme }) => `
   font-size: ${theme.fonts.ml.fontSize};
+  position: relative;
 
   span {
     font-size: ${theme.fonts.m.fontSize};
     font-weight: ${theme.fonts.weights.medium};
     padding-left: 5px;
   }
+`}`
+
+const CartNotification = styled.div`${({ theme, visible }) => `
+  position: absolute; 
+  font-size: ${theme.fonts.m.fontSize};
+  background: ${theme.colors.lightBeige};
+  border: 1px solid ${theme.colors.beigeHighlight};
+  border-radius: 10px;
+  padding: 8px 3px;
+  opacity: ${visible ? 1 : 0}; 
+  visibility: ${visible ? 'visible' : 'hidden'}; 
+  transform: scale(${visible ? 1 : 0.7});
+  pointer-events: none;
+  top: -50px;
+  right: 0;
+  width: 150px;
+  transition: all 0.2s;
+  text-align: center;
 `}`
 
 const CHECKOUT_FRAGMENT = gql`

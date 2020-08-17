@@ -151,7 +151,7 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
         onClick={() => addToCart(selectedVariant)}
         disabled={createCartLoading || updateCartLoading}
       >
-        Add{createCartLoading && 'ing'} to cart
+        Add{createCartLoading || updateCartLoading && 'ing'} to cart
       </button>
     </>
   )

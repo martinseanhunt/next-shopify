@@ -5,6 +5,8 @@ import styled from 'styled-components'
 
 import { COLLECTIONS_QUERY } from '../Collection'
 
+// TODO: Move this component
+
 const Navigation = ({ children }) => {
   const { data } = useQuery(COLLECTIONS_QUERY)
   const { query: { collectionHandle } } = useRouter()

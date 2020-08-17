@@ -1,4 +1,6 @@
-const initialState = {}
+const initialState = {
+  notifyItemAdded: false
+}
 
 const persistState = state => {
   localStorage.setItem('cart', JSON.stringify(state))
@@ -12,17 +14,24 @@ const cartReducer =(state, { type, payload }) => {
       return persistState({
         ...state,
         ...payload,
+        notifyItemAdded: true
       })
     case 'UPDATE_CART':
       return persistState({
         ...state,
         ...payload,
+        notifyItemAdded: true
       })
     case 'INITIALIZE_CART':
       return persistState({
         ...state,
         ...payload,
       })
+    case 'SET_NOTIFY_ITEM_ADDED':
+      return {
+        ...state,
+        notifyItemAdded: payload
+      }
     default:
       return state
   }
