@@ -7,7 +7,12 @@ import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 import { useCartContext } from '../contexts/cart/CartContext'
 
 const Cart = () => {
-  const { state, dispatch } = useCartContext()
+  const { state: { 
+    id, 
+    notifyItemAdded, 
+    lineItems, 
+    webUrl 
+  }, dispatch } = useCartContext()
 
   const [initializeCart, { loading: cartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
@@ -25,12 +30,11 @@ const Cart = () => {
 
   // If we have a cart in localstorage and no current cart lets initialize it
   useEffect(() => {
-    console.log('loading from local')
     const localCart = typeof window === 'object'
       && localStorage.getItem('cart')
       && JSON.parse(localStorage.getItem('cart'))
           
-    if(!state.id && localCart && localCart.id) initializeCart({
+    if(!id && localCart && localCart.id) initializeCart({
       variables: {
         checkoutId: localCart.id,
         lineItems: localCart.lineItems.edges.map(({ node }) => ({
@@ -42,41 +46,28 @@ const Cart = () => {
   }, [])
 
   useEffect(() => {
-    if(state.notifyItemAdded) setTimeout(() => 
+    if(notifyItemAdded) setTimeout(() => 
       dispatch({ type: 'SET_NOTIFY_ITEM_ADDED', payload: false })
     , 3000)
     
-  }, [state.notifyItemAdded])
-
-  // TODO: FIX!
-  const cartIcon = (
-    <>
-    <FontAwesomeIcon icon={faShoppingBasket} />
-    <span>
-      {/* TODO: Loading spinner */}
-      {cartLoading 
-        ? '...' 
-        : state.lineItems ? state.lineItems.edges.length : '0'
-      }
-    </span>
-    </>
-  )
+  }, [notifyItemAdded])
 
   return (
     <CartContainer>
-      <CartNotification visible={state.notifyItemAdded}>
+      <CartNotification visible={notifyItemAdded}>
         Item added to cart 🙌🏼
       </CartNotification>
       
-      {state.webUrl ? (
-        <a href={state.webUrl}>
-          {cartIcon}
+        <a href={webUrl ? webUrl: '#'}>
+          <FontAwesomeIcon icon={faShoppingBasket} />
+          <span>
+            {/* TODO: Loading spinner */}
+            {cartLoading 
+              ? '...' 
+              : lineItems ? lineItems.edges.length : '0'
+            }
+          </span>
         </a>
-      ) : (
-        <div>
-          {cartIcon}
-        </div>
-      )}
       
     </CartContainer>
   )
