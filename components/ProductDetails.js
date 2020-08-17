@@ -157,16 +157,20 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
       </div>
 
       <ProductInfo>
-        <h2>{product.title}</h2>
+        <Title>{product.title}</Title>
 
+        <Price>
+          {loadingVariant 
+            ? '...' // TODO: loading spinner
+            : invalidVariant 
+              ? `This option is currently unavailable`
+              : `£${selectedVariant.priceV2.amount}`
+          }
+        </Price>
+        
         <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}></div>
 
-        {loadingVariant 
-          ? '...' // TODO: loading spinner
-          : invalidVariant 
-            ? `This option is currently unavailable`
-            : `£${selectedVariant.priceV2.amount}`
-        }
+        
         
         {variants.length > 1 && product.options.map(({ name, values }) => (
           <label htmlFor={name} key={name}>{name}: 
@@ -267,11 +271,23 @@ const SmallImages = styled.div`
     height: 120px;
   }
 `
-const ProductInfo = styled.div`
+const ProductInfo = styled.div`${({ theme }) => `
   padding: 30px 0;
+`}`
 
-  h2 {}
-`
+const Title = styled.h2`${({ theme }) => `
+  padding: 0 0 15px 0;
+  font-weight: ${theme.fonts.weights.medium};
+  font-size: ${theme.fonts.l.fontSize};
+  text-transform: capitalize;
+`}`
+
+const Price = styled.h2`${({ theme }) => `
+  padding: 0 0 20px 0;
+  font-weight: ${theme.fonts.weights.bold};
+  font-size: ${theme.fonts.ml.fontSize};
+  text-transform: capitalize;
+`}`
 
 const VARIANT_FRAGMENT = gql`
   fragment VariantFragment on ProductVariant {
