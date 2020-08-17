@@ -125,6 +125,8 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
   const invalidVariant = !loadingVariant && !Object.values(selectedOptions)
     .every(option => selectedVariant.title.includes(option))
 
+  const defaultImage = product.images.edges[0] && product.images.edges[0].node.image
+
   return (
     <>
     <BreadCrumbs>
@@ -140,7 +142,9 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
         <ProductImage 
           // TODO: what if this variant isn't for sale but others are
           availableForSale={selectedVariant.availableForSale} 
-          image={selectedVariant.image || product.images[0].node.image}
+          // TODO: Clean this up. Use default image to start and then update
+          // it in state when the variant changes.
+          image={selectedVariant.image || defaultImage}
           autoHeight
         />
         <SmallImages>
@@ -152,8 +156,10 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
         </SmallImages>
       </div>
 
-      <div>
-        {product.title}
+      <ProductInfo>
+        <h2>{product.title}</h2>
+
+        <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}></div>
 
         {loadingVariant 
           ? '...' // TODO: loading spinner
@@ -183,7 +189,7 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
         >
           Add{createCartLoading || updateCartLoading && 'ing'} to cart
         </button>
-      </div>
+      </ProductInfo>
     </ProductGrid>
     </>
   )
@@ -238,17 +244,13 @@ const ProductGrid = styled.div`${({ theme }) => `
       grid-column: span 7;
     }
   }
-
-  img { 
-    border: 5px ${theme.colors.white} solid;
-  }
 `}`
 
 const SmallImages = styled.div`
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   grid-gap: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
 
   button {
     padding: 0;
@@ -264,6 +266,11 @@ const SmallImages = styled.div`
     object-fit: cover;
     height: 120px;
   }
+`
+const ProductInfo = styled.div`
+  padding: 30px 0;
+
+  h2 {}
 `
 
 const VARIANT_FRAGMENT = gql`

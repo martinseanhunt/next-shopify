@@ -20,6 +20,7 @@ const ImageContainer = styled.div`${({
   autoHeight 
 }) => `
   height: ${autoHeight ? 'auto' : '340px'};
+  min-height: 300px;
   background-color: ${theme.colors.lightGrey};
   background-position: center;
   background-repeat: no-repeat;
