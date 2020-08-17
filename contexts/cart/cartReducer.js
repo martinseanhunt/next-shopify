@@ -14,6 +14,11 @@ const cartReducer =(state, { type, payload }) => {
         ...state,
         ...payload,
       }
+    case 'UPDATE_CART':
+      return {
+        ...state,
+        ...payload,
+      }
     default:
       return state
   }

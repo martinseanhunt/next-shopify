@@ -33,81 +33,72 @@ const CartContainer = styled.div`${({ theme }) => `
   }
 `}`
 
+const CHECKOUT_FRAGMENT = gql`
+  fragment CheckoutFragment on Checkout {
+    id
+    lineItems(first: 250) {
+      edges {
+        node {
+          id
+          quantity
+          title
+          variant {
+            id
+            image {
+              transformedSrc(maxWidth: 200)
+            }
+            priceV2 {
+              amount
+            }
+          }
+        }
+      }
+    }
+    lineItemsSubtotalPrice {
+      amount
+    }
+    webUrl
+  }
+`
+
 export const CREATE_CART_MUTATION = gql`
-  mutation createCart(
+  mutation CreateCart(
     $input: CheckoutCreateInput!
   ) {
     checkoutCreate(
       input: $input
     ) {
       checkout {
-        id
-        lineItems(first: 250) {
-          edges {
-            node {
-              id
-              quantity
-              title
-              variant {
-                image {
-                  transformedSrc(maxWidth: 200)
-                }
-                priceV2 {
-                  amount
-                }
-              }
-            }
-          }
-        }
-        lineItemsSubtotalPrice {
-          amount
-        }
-        webUrl
+        ...CheckoutFragment
       }
       checkoutUserErrors {
         message
       }
     }
   }
+  ${CHECKOUT_FRAGMENT}
 `
 
 // TODO: finish this and use fragment for response
 export const UPDATE_CART_MUTATION = gql`
-  mutation createCart(
-    $input: CheckoutCreateInput!
+  mutation UpdateCart(
+    $lineItems: [CheckoutLineItemInput!]!
+    $checkoutId: ID!
   ) {
-    checkoutCreate(
-      input: $input
+    checkoutLineItemsReplace(
+      lineItems: $lineItems
+      checkoutId: $checkoutId
     ) {
       checkout {
-        id
-        lineItems(first: 250) {
-          edges {
-            node {
-              id
-              quantity
-              title
-              variant {
-                image {
-                  transformedSrc(maxWidth: 200)
-                }
-                priceV2 {
-                  amount
-                }
-              }
-            }
-          }
-        }
-        lineItemsSubtotalPrice {
-          amount
-        }
-        webUrl
+        ...CheckoutFragment
       }
-      checkoutUserErrors {
+      userErrors {
         message
+        field
       }
     }
   }
+  ${CHECKOUT_FRAGMENT}
 `
 
 export default Cart

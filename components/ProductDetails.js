@@ -3,7 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 
 import { useCartContext } from '../contexts/cart/CartContext'
 import useRefetchQuery from '../hooks/useRefetchQuery'
-import { CREATE_CART_MUTATION} from './Cart'
+import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart'
 
 // TODO: This whole component needs refactoring, prioritising speed over
 // refinement at this point ;) 
@@ -18,18 +18,28 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     }
   })
 
-  // TODO: move this
-  const onCreateCart = data => {
-    dispatch({ 
-      type: 'CREATE_CART',
-      payload: data.checkoutCreate.checkout 
-    })
-  }
+  // TODO: Handle state when we try to add more ofo somethin than is
+  // in stock to the cart
 
   const [createCart, { loading: createCartLoading }] = useMutation(
     CREATE_CART_MUTATION,
-    { onCompleted: onCreateCart }
-  );
+    { onCompleted: data => 
+      dispatch({ 
+        type: 'CREATE_CART',
+        payload: data.checkoutCreate.checkout 
+      }) 
+    }
+  )
+
+  const [updateCart, { loading: updateCartLoading }] = useMutation(
+    UPDATE_CART_MUTATION,
+    { onCompleted: data => 
+      dispatch({ 
+        type: 'UPDATE_CART',
+        payload: data.checkoutLineItemsReplace.checkout 
+      }) 
+    }
+  )
 
   // TODO: Can improve this by getting the variant with a lazyQuery and using the node()
   // query to do the product lookup
@@ -45,20 +55,34 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
   if(!product) return <div>Product not found</div>
 
   const [selectedOptions, setSelectedOptions] = useState(product.options.reduce((optionsMap, opt) => (
-    { ...optionsMap, [opt.name]: opt.values[0]  }
+    { ...optionsMap, [opt.name]: opt.values[0] }
   ), {}))
 
-  const addToCart = (variant) => {
-    if(state.id) {
-      
+  const addToCart = variant => {
+    const { id, lineItems } = state
+    const newItem = {
+      quantity: 1, // TODO
+      variantId: variant.id
+    }
+
+    if(id) {
+      updateCart({
+        variables: {
+          checkoutId: id,
+          lineItems: [
+            ...lineItems.edges.map(({ node }) => ({
+              variantId: node.variant.id,
+              quantity: node.quantity
+            })),
+            newItem
+          ]
+        }
+      })
     } else {
       createCart({
         variables: {
           input: { 
-            lineItems: [{
-              quantity: 1, // TODO
-              variantId: variant.id
-            }]
+            lineItems: [newItem]
           }
         }
       })
@@ -121,7 +145,7 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     
       <button 
         onClick={() => addToCart(selectedVariant)}
-        disabled={createCartLoading}
+        disabled={createCartLoading || updateCartLoading}
       >
         Add{createCartLoading && 'ing'} to cart
       </button>

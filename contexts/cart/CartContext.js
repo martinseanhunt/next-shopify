@@ -11,6 +11,8 @@ const useCartContext = () => useContext(CartContext)
 const CartContextProvider = props => {
   const [state, dispatch] = useReducer(cartReducer, initialState)
 
+  console.log(state)
+
   const value = {
     state,
     dispatch

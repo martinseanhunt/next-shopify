@@ -16,7 +16,11 @@ const Navigation = ({ children }) => {
       {collections && collections
         .filter(({ node }) => node.handle !== 'featured')
         .map(({ node }) => (
-          <Link key={node.handle} href={`/${node.handle}`}>
+          <Link 
+            key={node.handle} 
+            href='/[collectionHandle]'
+            as={`/${node.handle}`}
+          >
             <a className={node.handle === collectionHandle ? 'active' : undefined}>
               {node.title}
             </a>
