@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
+import styled from 'styled-components'
+import Link from 'next/link'
 
 import { useCartContext } from '../contexts/cart/CartContext'
 import useRefetchQuery from '../hooks/useRefetchQuery'
 import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart'
+
+import ProductImage from './ProductImage'
 
 // TODO: This whole component needs refactoring, prioritising speed over
 // refinement at this point ;) 
@@ -123,39 +127,144 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
   return (
     <>
-      {product.title}
-
-      {loadingVariant 
-        ? '...' // TODO: loading spinner
-        : invalidVariant 
-          ? `This option is currently unavailable`
-          : `£${selectedVariant.priceV2.amount}`
-      }
-      
-      {variants.length > 1 && product.options.map(({ name, values }) => (
-        <label htmlFor={name} key={name}>{name}: 
-          <select 
-            name={name} 
-            id={name} 
-            value={selectedOptions[name]}
-            onChange={onOptionChange}
-          >
-            {values.map(v => (
-              <option key={v} value={v}>{v}</option>
-            ))}
-          </select>
-        </label>
-      ))}
+    <BreadCrumbs>
+      <Link href="/"><a>Home</a></Link>
+      {` / `}
+      <Link href="/[collectionHandle]" as={`/${collectionHandle}`}><a>{collectionHandle.replace('-', ' ')}</a></Link>
+      {` / `} 
+      <b>{product.title}</b>
+    </BreadCrumbs>
     
-      <button 
-        onClick={() => addToCart(selectedVariant)}
-        disabled={createCartLoading || updateCartLoading}
-      >
-        Add{createCartLoading || updateCartLoading && 'ing'} to cart
-      </button>
+    <ProductGrid>
+      <div>
+        <ProductImage 
+          // TODO: what if this variant isn't for sale but others are
+          availableForSale={selectedVariant.availableForSale} 
+          image={selectedVariant.image || product.images[0].node.image}
+          autoHeight
+        />
+        <SmallImages>
+          {product.images.edges.map(({ node }) => (
+            <button>
+              <img src={node.transformedSrc} alt={node.altText} />
+            </button>
+          ))}
+        </SmallImages>
+      </div>
+
+      <div>
+        {product.title}
+
+        {loadingVariant 
+          ? '...' // TODO: loading spinner
+          : invalidVariant 
+            ? `This option is currently unavailable`
+            : `£${selectedVariant.priceV2.amount}`
+        }
+        
+        {variants.length > 1 && product.options.map(({ name, values }) => (
+          <label htmlFor={name} key={name}>{name}: 
+            <select 
+              name={name} 
+              id={name} 
+              value={selectedOptions[name]}
+              onChange={onOptionChange}
+            >
+              {values.map(v => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+        ))}
+      
+        <button 
+          onClick={() => addToCart(selectedVariant)}
+          disabled={createCartLoading || updateCartLoading}
+        >
+          Add{createCartLoading || updateCartLoading && 'ing'} to cart
+        </button>
+      </div>
+    </ProductGrid>
     </>
   )
 }
+
+const BreadCrumbs = styled.span`${({ theme }) => `
+  display: block;
+  color: ${theme.colors.medDarkGrey};
+  font-size: ${theme.fonts.s.fontSize};
+  font-weight: ${theme.fonts.weights.medium};
+  padding-bottom: 20px;
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  b {
+    font-weight: ${theme.fonts.weights.bold};
+    color: ${theme.colors.darkGrey}
+  }
+`}`
+
+const ProductGrid = styled.div`${({ theme }) => `
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-gap: 30px;
+
+  div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: ${theme.breakpoints.s}) {
+    div:first-child {
+      grid-column: span 6;
+    }
+
+    div:last-child {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: ${theme.breakpoints.m}) {
+    div:first-child {
+      grid-column: span 5;
+    }
+
+    div:last-child {
+      grid-column: span 7;
+    }
+  }
+
+  img { 
+    border: 5px ${theme.colors.white} solid;
+  }
+`}`
+
+const SmallImages = styled.div`
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-gap: 10px;
+  margin-top: 20px;
+
+  button {
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+    cursor: pointer;
+  }
+
+  img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+    height: 120px;
+  }
+`
 
 const VARIANT_FRAGMENT = gql`
   fragment VariantFragment on ProductVariant {
@@ -165,6 +274,11 @@ const VARIANT_FRAGMENT = gql`
     id
     sku
     title
+    image {
+      originalSrc
+      altText
+      transformedSrc(maxWidth: 245)
+    }
   }
 `
 
