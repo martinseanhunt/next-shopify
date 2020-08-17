@@ -9,6 +9,7 @@ import GlobalStyle from '../styles/GlobalStyle'
 import CartContextProvider from '../contexts/cart/CartContext'
 import Layout from '../components/layout/Layout'
 
+
 const MyApp = ({ Component, pageProps }) => {
   const apolloClient = useApollo(pageProps.initialApolloState)
 

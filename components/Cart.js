@@ -1,4 +1,5 @@
-import { gql } from '@apollo/client'
+import { useEffect } from 'react'
+import { gql, useMutation } from '@apollo/client'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
@@ -8,16 +9,44 @@ import { useCartContext } from '../contexts/cart/CartContext'
 const Cart = () => {
   const { state, dispatch } = useCartContext()
 
-  console.log(state)
-  
+  const [initializeCart, { loading: cartLoading }] = useMutation(
+    UPDATE_CART_MUTATION,
+    { onCompleted: data => 
+      dispatch({ 
+        type: 'INITIALIZE_CART',
+        payload: data.checkoutLineItemsReplace.checkout 
+      }) 
+    }
+  )
+
+  // If we have a cart in localstorage and no current cart lets initialize it
+  useEffect(() => {
+    const localCart = typeof window === 'object'
+      && localStorage.getItem('cart')
+      && JSON.parse(localStorage.getItem('cart'))
+          
+    if(!state.id && localCart && localCart.id) initializeCart({
+      variables: {
+        checkoutId: localCart.id,
+        lineItems: localCart.lineItems.edges.map(({ node }) => ({
+          variantId: node.variant.id,
+          quantity: node.quantity
+        }))
+      }
+    })
+  },[])
+
   return (
     <CartContainer>
       <a href={state.webUrl} disabled={!state.webUrl}>
-        <FontAwesomeIcon 
-          icon={faShoppingBasket} 
-          title="Shopping Basket Icon"
-        />
-        <span>{state.lineItems ? state.lineItems.edges.length : '0'}</span>
+        <FontAwesomeIcon icon={faShoppingBasket} />
+        <span>
+          {/* TODO: Loading spinner */}
+          {cartLoading 
+            ? '...' 
+            : state.lineItems ? state.lineItems.edges.length : '0'
+          }
+        </span>
       </a>
     </CartContainer>
   )
@@ -49,6 +78,7 @@ const CHECKOUT_FRAGMENT = gql`
             }
             priceV2 {
               amount
+              currencyCode
             }
           }
         }

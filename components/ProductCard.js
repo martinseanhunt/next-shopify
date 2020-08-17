@@ -29,10 +29,7 @@ const ProductCard = ({ product, collection }) => {
           <ImageContainer availableForSale={product.availableForSale}>
             {image 
               ? <img src={image.transformedSrc} alt={image.altText} /> 
-              : <FontAwesomeIcon 
-                  icon={faImage} 
-                  title="Image placeholder"
-                />
+              : <FontAwesomeIcon icon={faImage} title="Image placeholder" />
             }
           </ImageContainer>
           <h3>{title}</h3>

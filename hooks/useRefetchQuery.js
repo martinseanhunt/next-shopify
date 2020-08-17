@@ -13,7 +13,7 @@ const useRefetchQuery = (refetch) => {
     try { 
       refetch() 
     } catch { 
-      console.warn("Refetch is not successful when hot reloading")
+      console.warn('Refetch is not successful after hot reloads')
     }
   }, [])
 }
