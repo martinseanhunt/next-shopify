@@ -11,11 +11,15 @@ const Cart = () => {
 
   const [initializeCart, { loading: cartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
-    { onCompleted: data => 
-      dispatch({ 
-        type: 'INITIALIZE_CART',
-        payload: data.checkoutLineItemsReplace.checkout 
-      }) 
+    { 
+      onCompleted: data => 
+        dispatch({ 
+          type: 'INITIALIZE_CART',
+          payload: data.checkoutLineItemsReplace.checkout 
+        })
+      ,
+      onError: error => 
+        console.log("Couldn't load the cart, it's probably expired")
     }
   )
 
