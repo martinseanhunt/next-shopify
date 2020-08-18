@@ -106,7 +106,7 @@ export const COLLECTION_QUERY = gql`
       handle
       description(truncateAt: 240)
       image { 
-        transformedSrc(maxWidth: 1200) 
+        transformedSrc(maxWidth: 1100) 
       }
       products(first: 250) {
         pageInfo { hasNextPage }
