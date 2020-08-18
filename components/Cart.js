@@ -66,8 +66,13 @@ const Cart = () => {
     } catch (e) {
       console.log('invalid json in saved cart')
     }
+
+    const isValidCart = localCart 
+      && localCart.id 
+      && localCart.lineItems
+      && localCart.lineItems.edges
           
-    if(!id && localCart && localCart.id && localCart.lineItems) initializeCart({
+    if(!id && isValidCart) initializeCart({
       variables: {
         checkoutId: localCart.id,
         lineItems: localCart.lineItems.edges
