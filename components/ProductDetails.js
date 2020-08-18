@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import styled from 'styled-components'
 import Link from 'next/link'
+import Head from 'next/head'
 
 import formatMoney from '../util/formatMoney'
 import { useCartContext } from '../contexts/cart/CartContext'
@@ -138,106 +139,109 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
   return (
     <>
-    <BreadCrumbs>
-      <Link href="/"><a>Home</a></Link>
-      {` / `}
-      <Link href="/[collectionHandle]" as={`/${collectionHandle}`}><a>{collectionHandle.replace('-', ' ')}</a></Link>
-      {` / `} 
-      <b>{product.title}</b>
-    </BreadCrumbs>
-    
-    <ProductGrid>
-      <div>
-        <ProductImage 
-          // TODO: Clean this up. Use default image to start and then update
-          // it in state when the variant changes.
-          image={selectedImage}
-          autoHeight
-        />
-        <SmallImages>
-          {product.images.edges
-            .filter(({ node }) => node.transformedSrc !== selectedImage.transformedSrc)
-            .map(({ node }) => (
-              <button 
-                key={node.transformedSrc}
-                onClick={() => setSelectedImage(node)}
-              >
-                <img src={node.transformedSrc} alt={node.altText} />
-              </button>
-            ))
-          }
-        </SmallImages>
-      </div>
+      <Head>
+        <title>Goodery - {product.title}</title>
+      </Head>
+      <BreadCrumbs>
+        <Link href="/"><a>Home</a></Link>
+        {` / `}
+        <Link href="/[collectionHandle]" as={`/${collectionHandle}`}><a>{collectionHandle.replace('-', ' ')}</a></Link>
+        {` / `} 
+        <b>{product.title}</b>
+      </BreadCrumbs>
+      
+      <ProductGrid>
+        <div>
+          <ProductImage 
+            // TODO: Clean this up. Use default image to start and then update
+            // it in state when the variant changes.
+            image={selectedImage}
+            autoHeight
+          />
+          <SmallImages>
+            {product.images.edges
+              .filter(({ node }) => node.transformedSrc !== selectedImage.transformedSrc)
+              .map(({ node }) => (
+                <button 
+                  key={node.transformedSrc}
+                  onClick={() => setSelectedImage(node)}
+                >
+                  <img src={node.transformedSrc} alt={node.altText} />
+                </button>
+              ))
+            }
+          </SmallImages>
+        </div>
 
-      <ProductInfo>
-        <Title>{product.title}</Title>
+        <ProductInfo>
+          <Title>{product.title}</Title>
 
-        <Price>
-          {loadingVariant 
-            // TODO: refactor
-            ? '...' // TODO: loading spinner
-            : invalidVariant 
-              ? `This option is currently unavailable`
-              : (
-                <span>
-                  {formatMoney(selectedVariant.priceV2)}
-                  {!selectedVariant.available && ' (Out of stock)'}
-                </span>
-              )     
-          }
-        </Price>
-        
-        <Options>
-          {variants.length > 1 && product.options.map(({ name, values }) => (
-            <label htmlFor={name} key={name}>{name}: 
-              <select 
-                name={name} 
-                id={name} 
-                value={selectedOptions[name]}
-                onChange={onOptionChange}
-              >
-                {values.map(v => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
-              </select>
+          <Price>
+            {loadingVariant 
+              // TODO: refactor
+              ? '...' // TODO: loading spinner
+              : invalidVariant 
+                ? `This option is currently unavailable`
+                : (
+                  <span>
+                    {formatMoney(selectedVariant.priceV2)}
+                    {!selectedVariant.available && ' (Out of stock)'}
+                  </span>
+                )     
+            }
+          </Price>
+          
+          <Options>
+            {variants.length > 1 && product.options.map(({ name, values }) => (
+              <label htmlFor={name} key={name}>{name}: 
+                <select 
+                  name={name} 
+                  id={name} 
+                  value={selectedOptions[name]}
+                  onChange={onOptionChange}
+                >
+                  {values.map(v => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+
+            <label htmlFor="quantity">Quantity: 
+              <input 
+                value={quantitySelected} 
+                id="quantity" 
+                type="number"
+                min="1"
+                onChange={e => setQuantitySelected(parseInt(e.target.value))}
+              />
             </label>
-          ))}
+          </Options>
+          
+          <Actions>
+            <AddToCart 
+              onClick={() => onAddToCart(selectedVariant)}
+              disabled={createCartLoading || updateCartLoading || invalidVariant || !selectedVariant.available}
+            >
+              Add{createCartLoading || updateCartLoading && 'ing'} to cart
+            </AddToCart>
 
-          <label htmlFor="quantity">Quantity: 
-            <input 
-              value={quantitySelected} 
-              id="quantity" 
-              type="number"
-              min="1"
-              onChange={e => setQuantitySelected(parseInt(e.target.value))}
-            />
-          </label>
-        </Options>
-        
-        <Actions>
-          <AddToCart 
-            onClick={() => onAddToCart(selectedVariant)}
-            disabled={createCartLoading || updateCartLoading || invalidVariant || !selectedVariant.available}
-          >
-            Add{createCartLoading || updateCartLoading && 'ing'} to cart
-          </AddToCart>
+            <CartNotification visible={state.notifyItemAdded}>
+              Item added to cart 🙌🏼
+            </CartNotification> 
+          </Actions>
 
-          <CartNotification visible={state.notifyItemAdded}>
-            Item added to cart 🙌🏼
-          </CartNotification> 
-        </Actions>
-
-        {product.descriptionHtml && (
-          <>
-            <DescriptionLabel>Description:</DescriptionLabel>
-            <HtmlDescription 
-              dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}
-            />
-          </>
-        )}
-        
-      </ProductInfo>
-    </ProductGrid>
+          {product.descriptionHtml && (
+            <>
+              <DescriptionLabel>Description:</DescriptionLabel>
+              <HtmlDescription 
+                dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}
+              />
+            </>
+          )}
+          
+        </ProductInfo>
+      </ProductGrid>
     </>
   )
 }

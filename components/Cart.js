@@ -34,6 +34,8 @@ const Cart = () => {
     }
   )
 
+  // TODO: We could use an optimistic response here so that we show the updated 
+  // quantities immediately and do the legwork behind the scenes
   const [updateCart, { loading: updateCartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
     { 

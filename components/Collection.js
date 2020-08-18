@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import styled from 'styled-components'
+import Head from 'next/head'
 
 import useRefetchQuery from '../hooks/useRefetchQuery'
 import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
@@ -37,31 +38,36 @@ const Collection = ({ handle }) => {
   // In production would think of another solutionbecause it's not good enough. 
 
   return (
-    <CollectionSection>
-      {collection.image && (
-        <Hero 
-          title={collection.title} 
-          description={collection.description}
-          background={collection.image.transformedSrc}  
-        />
-      )}
-
-      <CollectionMeta>
-        <h2><b>{products.length}</b> {collection.title}</h2>
-        {/* TODO: Filters */}
-        <span>for <b>people</b> and <b>the planet</b></span>
-      </CollectionMeta>
-
-      <ProductGrid>
-        {products.length > 0 && products.map(({ node }) =>
-          <ProductCard 
-            collection={collection.handle}
-            product={node} 
-            key={node.handle} 
+    <>
+      <Head>
+        <title>Goodery - {collection.title}</title>
+      </Head>
+      <CollectionSection>
+        {collection.image && (
+          <Hero 
+            title={collection.title} 
+            description={collection.description}
+            background={collection.image.transformedSrc}  
           />
         )}
-      </ProductGrid>
-    </CollectionSection>
+
+        <CollectionMeta>
+          <h2><b>{products.length}</b> {collection.title}</h2>
+          {/* TODO: Filters */}
+          <span>for <b>people</b> and <b>the planet</b></span>
+        </CollectionMeta>
+
+        <ProductGrid>
+          {products.length > 0 && products.map(({ node }) =>
+            <ProductCard 
+              collection={collection.handle}
+              product={node} 
+              key={node.handle} 
+            />
+          )}
+        </ProductGrid>
+      </CollectionSection>
+    </>
   )
 }
 

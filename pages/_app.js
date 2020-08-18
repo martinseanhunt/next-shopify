@@ -16,8 +16,9 @@ const MyApp = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>Goodery</title>
+        <title>Goodery - food for people and the planet</title>
         <link rel="icon" href="/favicon.ico" />
+        <meta name="robots" content="noindex" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
 
