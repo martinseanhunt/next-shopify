@@ -60,12 +60,21 @@ const Cart = () => {
   useEffect(() => {
     const localCart = typeof window === 'object'
       && localStorage.getItem('cart')
-      && JSON.parse(localStorage.getItem('cart'))
+    
+    let localJson
+
+    try {
+      localJson = JSON.parse(localStorage.getItem('cart'))
+    } catch (e) {
+      console.log('invalid json')
+    }
           
-    if(!id && localCart && localCart.id) initializeCart({
+    if(!id && localJson && localJson.id) initializeCart({
       variables: {
-        checkoutId: localCart.id,
-        lineItems: localCart.lineItems.edges.map(({ node }) => ({
+        checkoutId: localJson.id,
+        lineItems: localJson.lineItems.edges
+        .filter(({ node }) => !!node)
+        .map(({ node }) => ({
           variantId: node.variant.id,
           quantity: node.quantity
         }))
