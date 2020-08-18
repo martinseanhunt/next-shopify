@@ -16,6 +16,9 @@ const Cart = () => {
   }, dispatch } = useCartContext()
 
   const [cartOpen, setCartOpen] = useState(false)
+  const [updatingItemId, setUpdatingItemId] = useState(null)
+  const [deletingItemId, setDeletingItemId] = useState(null)
+
   const [cartDetailsRef, openCartButtonRef] = useHandleClickOutside(
     () => setCartOpen(false)
   )
@@ -75,7 +78,7 @@ const Cart = () => {
     
   }, [notifyItemAdded])
 
-  const onUpdateQuantity = (variantId, quantity) => {
+  const onUpdateQuantity = async (variantId, quantity) => {
     const newLineItems = lineItems.edges
     .map(({ node }) => ({
       variantId: node.variant.id,
@@ -84,16 +87,22 @@ const Cart = () => {
         : node.quantity
     }))
 
-    updateCart({
+    setUpdatingItemId(variantId)
+
+    await updateCart({
       variables: {
         checkoutId: id,
         lineItems: newLineItems
       }
     })
+
+    setUpdatingItemId(null)
   }
 
-  const onDeleteItem = variantId => {
-    updateCart({
+  const onDeleteItem = async (variantId) => {
+    setDeletingItemId(variantId)
+    
+    await updateCart({
       variables: {
         checkoutId: id,
         lineItems: lineItems.edges
@@ -104,6 +113,8 @@ const Cart = () => {
           }))
       }
     })
+
+    setDeletingItemId(null)
   }
 
   return (
@@ -145,7 +156,7 @@ const Cart = () => {
                       >
                         -
                       </button>
-                      <span>{node.quantity}</span>
+                      <span>{node.variant.id === updatingItemId ? '...' : node.quantity}</span>
                       <button 
                         onClick={() => onUpdateQuantity(node.variant.id, node.quantity + 1)}
                         disabled={updateCartLoading}
@@ -157,7 +168,7 @@ const Cart = () => {
                       disabled={updateCartLoading}
                       onClick={() => onDeleteItem(node.variant.id)}
                     >
-                      x
+                      {node.variant.id === deletingItemId ? '...' : 'x'}
                     </Delete>
                   </Controls>
                 </div>
