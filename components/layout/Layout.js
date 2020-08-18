@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +12,20 @@ import Cart from '../Cart'
 
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const mobileNavRef = useRef()
+  const mobileNavToggleRef = useRef()
+
+  // TODO: Make this a reusable hook
+  useEffect(() => {
+    const handleClick = e => mobileNavRef.current 
+      && !mobileNavRef.current.contains(e.target)
+      && !mobileNavToggleRef.current.contains(e.target)
+      && setMobileOpen(false)
+
+    document.addEventListener('mousedown', handleClick)
+
+    return () => document.removeEventListener('mousedown', handleClick)
+  },[])
 
   return (
     <Container>
@@ -21,14 +35,17 @@ const Layout = ({ children }) => {
         </Link>
 
         <Menu>
-          <MobileNavToggle onClick={() => setMobileOpen(!mobileOpen)}>
+          <MobileNavToggle 
+            onClick={() => setMobileOpen(!mobileOpen)}
+            ref={mobileNavToggleRef}
+          >
             <FontAwesomeIcon icon={faBars} />
           </MobileNavToggle>
           <Navigation />
           <Cart />
         </Menu>
       </Header>
-      <MobileNav>
+      <MobileNav ref={mobileNavRef}>
         <Navigation mobileOpen={mobileOpen} mobile/>
       </MobileNav>
       <main>
@@ -78,6 +95,7 @@ const Menu = styled.main`${({ theme }) => `
 const MobileNavToggle = styled.button`${({ theme }) => `
   border: none;
   padding: 0;
+  background: none;
   margin-right: 20px;
   cursor: pointer;
   outline: none;

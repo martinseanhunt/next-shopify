@@ -61,6 +61,8 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
   const variants = product && product.variants.edges
   const selectedVariant = product && product.variantBySelectedOptions || variants && variants[0].node
 
+  const [quantitySelected, setQuantitySelected] = useState(1)
+
   const [selectedOptions, setSelectedOptions] = useState(product && product.options
     .reduce((optionsMap, opt) => (
       { ...optionsMap, [opt.name]: opt.values[0] }
@@ -75,7 +77,7 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
   const onAddToCart = variant => {
     const { id, lineItems } = state
     const newItem = {
-      quantity: 1, // TODO
+      quantity: quantitySelected,
       variantId: variant.id
     }
 
@@ -185,24 +187,32 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
           }
         </Price>
         
-        {variants.length > 1 &&(
-          <Variants>
-            {product.options.map(({ name, values }) => (
-              <label htmlFor={name} key={name}>{name}: 
-                <select 
-                  name={name} 
-                  id={name} 
-                  value={selectedOptions[name]}
-                  onChange={onOptionChange}
-                >
-                  {values.map(v => (
-                    <option key={v} value={v}>{v}</option>
-                  ))}
-                </select>
-              </label>
-            ))}
-          </Variants>
-        )}
+        <Options>
+          {variants.length > 1 && product.options.map(({ name, values }) => (
+            <label htmlFor={name} key={name}>{name}: 
+              <select 
+                name={name} 
+                id={name} 
+                value={selectedOptions[name]}
+                onChange={onOptionChange}
+              >
+                {values.map(v => (
+                  <option key={v} value={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+          ))}
+
+          <label htmlFor="quantity">Quantity: 
+            <input 
+              value={quantitySelected} 
+              id="quantity" 
+              type="number"
+              min="1"
+              onChange={e => setQuantitySelected(parseInt(e.target.value))}
+            />
+          </label>
+        </Options>
         
         <Actions>
           <AddToCart 
@@ -322,7 +332,7 @@ const Price = styled.span`${({ theme }) => `
   text-transform: capitalize;
 `}`
 
-const Variants = styled.div`${({ theme }) => `
+const Options = styled.div`${({ theme }) => `
   display: grid; 
   grid-template-columns: repeat(auto-fill, minmax(200px, 270px));
   grid-column-gap: 15px;
@@ -334,7 +344,7 @@ const Variants = styled.div`${({ theme }) => `
     font-weight: ${theme.fonts.weights.medium};
   }
 
-  select { 
+  select, input { 
     display: block; 
     width: 100%;
     padding: 7px;
