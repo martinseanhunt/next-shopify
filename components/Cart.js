@@ -67,7 +67,7 @@ const Cart = () => {
       console.log('invalid json in saved cart')
     }
           
-    if(!id && localCart && localCart.id) initializeCart({
+    if(!id && localCart && localCart.id && localCart.lineItems) initializeCart({
       variables: {
         checkoutId: localCart.id,
         lineItems: localCart.lineItems.edges
