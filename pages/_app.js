@@ -3,6 +3,10 @@ import { ApolloProvider } from '@apollo/client'
 import { useApollo } from '../lib/apolloClient'
 import { ThemeProvider } from 'styled-components'
 
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
+config.autoAddCss = false
+
 import theme from '../styles/theme'
 import GlobalStyle from '../styles/GlobalStyle'
 
