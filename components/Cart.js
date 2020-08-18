@@ -65,6 +65,7 @@ const Cart = () => {
       <OpenCartButton 
         onClick={() => setCartOpen(!cartOpen)}
         ref={openCartButtonRef}
+        disabled={!lineItems || !lineItems.edges.length}
       >
         <FontAwesomeIcon icon={faShoppingBasket} />
         <span>
@@ -135,6 +136,10 @@ const OpenCartButton = styled.button`${({ theme }) => `
   outline: none;
   font-size: ${theme.fonts.ml.fontSize};
   cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
   
   span {
     font-size: ${theme.fonts.m.fontSize};
