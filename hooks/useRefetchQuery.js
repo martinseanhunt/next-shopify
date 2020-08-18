@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react'
 
-const useRefetchQuery = _refetch => {
+const useRefetchQuery = refetch => {
   // Use this hook to trigger a silent refetch after the initial render of a given component.
   // This way we know the data is up to date for the current user.
 
