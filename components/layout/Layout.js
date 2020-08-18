@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
+
+import useHandleClickOutside from '../../hooks/useHandleClickOutside'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
@@ -12,20 +14,9 @@ import Cart from '../Cart'
 
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const mobileNavRef = useRef()
-  const mobileNavToggleRef = useRef()
-
-  // TODO: Make this a reusable hook
-  useEffect(() => {
-    const handleClick = e => mobileNavRef.current 
-      && !mobileNavRef.current.contains(e.target)
-      && !mobileNavToggleRef.current.contains(e.target)
-      && setMobileOpen(false)
-
-    document.addEventListener('mousedown', handleClick)
-
-    return () => document.removeEventListener('mousedown', handleClick)
-  },[])
+  const [mobileNavRef, mobileNavToggleRef] = useHandleClickOutside(
+    () => setMobileOpen(false)
+  )
 
   return (
     <Container>
