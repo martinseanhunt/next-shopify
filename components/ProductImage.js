@@ -2,9 +2,9 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 
-const ProductImage = ({ image, availableForSale, autoHeight }) => (
+const ProductImage = ({ image, showOutOfStock, autoHeight }) => (
   <ImageContainer 
-    availableForSale={availableForSale}
+    showOutOfStock={showOutOfStock}
     autoHeight={autoHeight}
   >
     {image 
@@ -16,7 +16,7 @@ const ProductImage = ({ image, availableForSale, autoHeight }) => (
 
 const ImageContainer = styled.div`${({ 
   theme, 
-  availableForSale, 
+  showOutOfStock, 
   autoHeight 
 }) => `
   height: ${autoHeight ? 'auto' : '340px'};
@@ -39,7 +39,7 @@ const ImageContainer = styled.div`${({
     `}
   }
 
-  ${!availableForSale && `
+  ${showOutOfStock && `
     &::after {
       position: absolute;
       top: 0;

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Link from 'next/link'
 
 import ProductImage from './ProductImage'
+import formatMoney from '../util/formatMoney'
 
 const ProductCard = ({ product, collection }) => {  
   const { 
@@ -15,9 +16,10 @@ const ProductCard = ({ product, collection }) => {
 
   const image = images.edges.length && images.edges[0].node
   
+  // TODO: tidy up
   const price = minVariantPrice.amount === maxVariantPrice.amount
-    ? `£${parseFloat(minVariantPrice.amount)}`
-    : `£${parseFloat(minVariantPrice.amount)} - ${parseFloat(maxVariantPrice.amount)}`
+    ? `${formatMoney(minVariantPrice)}`
+    : `${formatMoney(minVariantPrice)} - ${formatMoney(maxVariantPrice)}`
 
   return (
     <Link 
@@ -28,7 +30,7 @@ const ProductCard = ({ product, collection }) => {
         <Product>
           <ProductImage 
             image={image} 
-            availableForSale={availableForSale}  
+            showOutOfStock={!availableForSale}  
           />
           <h3>{title}</h3>
           <strong>{price}</strong>
@@ -58,6 +60,7 @@ const Product = styled.div`${({ theme }) => `
     color: ${theme.colors.medDarkGrey};
     font-weight: ${theme.fonts.weights.medium};
     font-size: ${theme.fonts.base.fontSize};
+    line-height: ${theme.fonts.s.lineHeight};
   }
 `}`
 
@@ -66,7 +69,7 @@ export const PRODUCT_CARD_FRAGMENT = gql`
     availableForSale
     handle 
     title
-    description(truncateAt: 120)
+    description(truncateAt: 108)
     images(first: 1) {
       edges {
         node {

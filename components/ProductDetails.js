@@ -3,6 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import styled from 'styled-components'
 import Link from 'next/link'
 
+import formatMoney from '../util/formatMoney'
 import { useCartContext } from '../contexts/cart/CartContext'
 import useRefetchQuery from '../hooks/useRefetchQuery'
 import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart'
@@ -121,11 +122,13 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
   // We need to handle invalid variants e.g. if a particular combination of 
   // options doesn't exist in the shopify admin. This is an edge case but it's
-  // still worth safeguarding against. 
+  // still worth safeguarding against.
   const invalidVariant = !loadingVariant && !Object.values(selectedOptions)
     .every(option => selectedVariant.title.includes(option))
 
-  const defaultImage = product.images.edges[0] && product.images.edges[0].node.image
+  const [selectedImage, setSelectedImage] = useState(
+    selectedVariant.image || product.images.edges[0] && product.images.edges[0].node.image
+  )
 
   return (
     <>
@@ -140,19 +143,23 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     <ProductGrid>
       <div>
         <ProductImage 
-          // TODO: what if this variant isn't for sale but others are
-          availableForSale={selectedVariant.availableForSale} 
           // TODO: Clean this up. Use default image to start and then update
           // it in state when the variant changes.
-          image={selectedVariant.image || defaultImage}
+          image={selectedImage}
           autoHeight
         />
         <SmallImages>
-          {product.images.edges.map(({ node }) => (
-            <button>
-              <img src={node.transformedSrc} alt={node.altText} />
-            </button>
-          ))}
+          {product.images.edges
+            .filter(({ node }) => node.transformedSrc !== selectedImage.transformedSrc)
+            .map(({ node }) => (
+              <button 
+                key={node.transformedSrc}
+                onClick={() => setSelectedImage(node)}
+              >
+                <img src={node.transformedSrc} alt={node.altText} />
+              </button>
+            ))
+          }
         </SmallImages>
       </div>
 
@@ -161,38 +168,54 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
         <Price>
           {loadingVariant 
+            // TODO: refactor
             ? '...' // TODO: loading spinner
             : invalidVariant 
               ? `This option is currently unavailable`
-              : `£${selectedVariant.priceV2.amount}`
+              : (
+                <span>
+                  {formatMoney(selectedVariant.priceV2)}
+                  {!selectedVariant.available && ' (Out of stock)'}
+                </span>
+              )     
           }
         </Price>
         
-        <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}></div>
-
+        {variants.length > 1 &&(
+          <Variants>
+            {product.options.map(({ name, values }) => (
+              <label htmlFor={name} key={name}>{name}: 
+                <select 
+                  name={name} 
+                  id={name} 
+                  value={selectedOptions[name]}
+                  onChange={onOptionChange}
+                >
+                  {values.map(v => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
+              </label>
+            ))}
+          </Variants>
+        )}
         
-        
-        {variants.length > 1 && product.options.map(({ name, values }) => (
-          <label htmlFor={name} key={name}>{name}: 
-            <select 
-              name={name} 
-              id={name} 
-              value={selectedOptions[name]}
-              onChange={onOptionChange}
-            >
-              {values.map(v => (
-                <option key={v} value={v}>{v}</option>
-              ))}
-            </select>
-          </label>
-        ))}
-      
-        <button 
+        <AddToCart 
           onClick={() => addToCart(selectedVariant)}
-          disabled={createCartLoading || updateCartLoading}
+          disabled={createCartLoading || updateCartLoading || invalidVariant || !selectedVariant.available}
         >
           Add{createCartLoading || updateCartLoading && 'ing'} to cart
-        </button>
+        </AddToCart>
+        
+        {product.descriptionHtml && (
+          <>
+            <DescriptionLabel>Description:</DescriptionLabel>
+            <HtmlDescription 
+              dangerouslySetInnerHTML={{ __html: product.descriptionHtml}}
+            />
+          </>
+        )}
+        
       </ProductInfo>
     </ProductGrid>
     </>
@@ -272,21 +295,82 @@ const SmallImages = styled.div`
   }
 `
 const ProductInfo = styled.div`${({ theme }) => `
-  padding: 30px 0;
+  padding: 15px 0;
 `}`
 
 const Title = styled.h2`${({ theme }) => `
-  padding: 0 0 15px 0;
-  font-weight: ${theme.fonts.weights.medium};
+  padding: 0 0 20px 0;
+  font-size: ${theme.fonts.xl.fontSize};
+  text-transform: capitalize;
+`}`
+
+const Price = styled.span`${({ theme }) => `
+  display: block;
+  padding: 0 0 40px 0;
+  font-weight: ${theme.fonts.weights.bold};
   font-size: ${theme.fonts.l.fontSize};
   text-transform: capitalize;
 `}`
 
-const Price = styled.h2`${({ theme }) => `
-  padding: 0 0 20px 0;
-  font-weight: ${theme.fonts.weights.bold};
-  font-size: ${theme.fonts.ml.fontSize};
-  text-transform: capitalize;
+const Variants = styled.div`${({ theme }) => `
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(200px, 270px));
+  grid-column-gap: 15px;
+  grid-row-gap: 20px;
+  margin-bottom: 25px;
+
+  label {
+    color: ${theme.colors.medDarkGrey};
+    font-weight: ${theme.fonts.weights.medium};
+  }
+
+  select { 
+    display: block; 
+    width: 100%;
+    padding: 7px;
+    background: ${theme.colors.lightBeige};
+    border: 1px solid ${theme.colors.beigeHighlight};
+    border-radius: 5px;
+    margin-top: 5px;
+  }
+`}`
+
+const AddToCart = styled.button`${({ theme }) => `
+  cursor: pointer;
+  border: 1px solid ${theme.colors.medGrey};
+  background: ${theme.colors.beigeHighlight};
+  padding: 7px 40px;
+  border-radius: 5px;
+  margin-bottom: 35px;
+
+  &:disabled {
+    color: ${theme.colors.medGrey};
+    cursor: default;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  &:hover {
+    transform: scale(1.01);
+  }
+`}`
+
+const DescriptionLabel = styled.span`${({ theme }) => `
+  color: ${theme.colors.medDarkGrey};
+  font-weight: ${theme.fonts.weights.medium};
+  display: block;
+  margin-bottom: 5px;
+`}`
+
+const HtmlDescription = styled.div`${({ theme }) => `
+  font-size: ${theme.fonts.m.fontSize};
+  line-height: ${theme.fonts.m.lineHeight};
+
+  p {
+    margin-bottom: 20px;
+  }
 `}`
 
 const VARIANT_FRAGMENT = gql`

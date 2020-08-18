@@ -32,9 +32,11 @@ const theme = {
     },
     s: {
       fontSize: '1.1rem',
+      lineHeight: 1.6
     },
     m: {
       fontSize: '1.4rem',
+      lineHeight: 1.8
     },
     ml: {
       fontSize: '1.6rem',
@@ -44,6 +46,9 @@ const theme = {
       lineHeight: 1.5
     },
     xl: { 
+      fontSize: '4rem',
+    },
+    xxl: { 
       fontSize: '6rem',
     },
     weights: {

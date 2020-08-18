@@ -41,7 +41,7 @@ const Banner = styled.section`${({ theme, background }) => `
   }
 
   h2 {
-    font-size: ${theme.fonts.xl.fontSize};
+    font-size: ${theme.fonts.xxl.fontSize};
     font-weight: ${theme.fonts.weights.medium};
   }
 

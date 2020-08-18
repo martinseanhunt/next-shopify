@@ -65,9 +65,14 @@ const GlobalStyle = createGlobalStyle`${({ theme }) => `
     font-family: ${theme.fonts.base.fontFamily};
     font-weight: ${theme.fonts.weights.regular};
     font-size: ${theme.fonts.s.fontSize};
-    line-height: ${theme.fonts.s.lineHeight};
     background: ${theme.colors.gooderyBeige};
     color: ${theme.colors.darkGrey};
+  }
+
+  select, button {
+    color: ${theme.colors.darkGrey};
+    font-family: ${theme.fonts.base.fontFamily};
+    font-weight: ${theme.fonts.weights.regular};
   }
 
   b, strong { font-weight: ${theme.fonts.weights.bold} }
