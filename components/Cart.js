@@ -180,7 +180,7 @@ const Cart = () => {
             ))}
           </LineItems>
           <Checkout href={webUrl ? webUrl: '#'}>
-            Checkout (<b>{updateCartLoading ? '...' : formatMoney(lineItemsSubtotalPrice)}</b>)
+            Checkout (<b>{formatMoney(lineItemsSubtotalPrice)}</b>)
           </Checkout>
         </CartDetails>
       )}
