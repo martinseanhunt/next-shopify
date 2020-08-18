@@ -56,18 +56,20 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     }
   )
 
+  // TODO: Maybe pass down data from page level to avoid this
   const product = data && data.productByHandle
   const variants = product && product.variants.edges
-  const selectedVariant = product && product.variantBySelectedOptions || variants[0].node
+  const selectedVariant = product && product.variantBySelectedOptions || variants && variants[0].node
 
   const [selectedOptions, setSelectedOptions] = useState(product && product.options
     .reduce((optionsMap, opt) => (
       { ...optionsMap, [opt.name]: opt.values[0] }
     ), {})
   )
-
+  
+  // TODO: This is bad
   const [selectedImage, setSelectedImage] = useState(
-    selectedVariant.image || product.images.edges[0] && product.images.edges[0].node.image
+    selectedVariant && selectedVariant.image || product && product.images.edges[0] && product.images.edges[0].node.image
   )
 
   const onAddToCart = variant => {

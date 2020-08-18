@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
 import { useCartContext } from '../contexts/cart/CartContext'
-import { VARIANT_FRAGMENT } from './ProductDetails'
 
 const Cart = () => {
   const { state: { 
@@ -104,7 +103,17 @@ const CHECKOUT_FRAGMENT = gql`
           quantity
           title
           variant {
-            ...VariantFragment
+            available
+    availableForSale
+    priceV2{ amount, currencyCode }
+    id
+    sku
+    title
+    image {
+      originalSrc
+      altText
+      transformedSrc(maxWidth: 245)
+    }
           }
         }
       }
@@ -114,7 +123,6 @@ const CHECKOUT_FRAGMENT = gql`
     }
     webUrl
   }
-  ${VARIANT_FRAGMENT}
 `
 
 export const CREATE_CART_MUTATION = gql`
