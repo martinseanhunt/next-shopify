@@ -319,12 +319,13 @@ const SmallImages = styled.div`
   }
 `
 const ProductInfo = styled.div`${({ theme }) => `
-  padding: 15px 0;
+  padding: 10px 0;
 `}`
 
 const Title = styled.h2`${({ theme }) => `
   padding: 0 0 20px 0;
   font-size: ${theme.fonts.xl.fontSize};
+  line-height: ${theme.fonts.xl.lineHeight};
   text-transform: capitalize;
 `}`
 

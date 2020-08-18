@@ -47,6 +47,7 @@ const theme = {
     },
     xl: { 
       fontSize: '4rem',
+      lineHeight: 1.3
     },
     xxl: { 
       fontSize: '6rem',
