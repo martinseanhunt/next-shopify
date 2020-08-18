@@ -34,6 +34,21 @@ const Cart = () => {
     }
   )
 
+  const [updateCart, { loading: updateCartLoading }] = useMutation(
+    UPDATE_CART_MUTATION,
+    { 
+      onCompleted: data => {
+        const checkout = data.checkoutLineItemsReplace.checkout        
+        if(!checkout.lineItems.edges.length) setCartOpen(false) 
+        
+        dispatch({ 
+          type: 'UPDATE_CART_FROM_CHECKOUT',
+          payload: data.checkoutLineItemsReplace.checkout 
+        }) 
+      }
+    }
+  )
+
   // If we have a cart in localstorage and no current cart lets initialize it
   useEffect(() => {
     const localCart = typeof window === 'object'
@@ -58,14 +73,44 @@ const Cart = () => {
     
   }, [notifyItemAdded])
 
-  // TODO: use reusable component from closing navigation on click outside
-  // use the appoach I'm using here where the button ony ever opens then the click outside will catch and close
+  const onUpdateQuantity = (variantId, quantity) => {
+    const newLineItems = lineItems.edges
+    .map(({ node }) => ({
+      variantId: node.variant.id,
+      quantity: variantId === node.variant.id 
+        ? quantity
+        : node.quantity
+    }))
+
+    updateCart({
+      variables: {
+        checkoutId: id,
+        lineItems: newLineItems
+      }
+    })
+  }
+
+  const onDeleteItem = variantId => {
+    updateCart({
+      variables: {
+        checkoutId: id,
+        lineItems: lineItems.edges
+          .filter(({ node }) => node.variant.id !== variantId)
+          .map(({ node }) => ({
+            variantId: node.variant.id,
+            quantity: node.quantity
+          }))
+      }
+    })
+  }
+
   return (
-    <CartContainer notifyItemAdded={notifyItemAdded}>
+    <CartContainer>
       <OpenCartButton 
         onClick={() => setCartOpen(!cartOpen)}
         ref={openCartButtonRef}
         disabled={!lineItems || !lineItems.edges.length}
+        notifyItemAdded={notifyItemAdded}
       >
         <FontAwesomeIcon icon={faShoppingBasket} />
         <span>
@@ -80,7 +125,7 @@ const Cart = () => {
         <CartDetails ref={cartDetailsRef}>
           <LineItems>
             {lineItems.edges.length && lineItems.edges.map(({ node }) => (
-              <LineItem>
+              <LineItem key={node.id}>
                 <img src={node.variant.image.transformedSrc} alt={node.title} />
 
                 <div>
@@ -92,11 +137,26 @@ const Cart = () => {
                   </h4>
                   <Controls>
                     <Quantity>
-                      <button>-</button>
+                      <button 
+                        onClick={() => onUpdateQuantity(node.variant.id, node.quantity - 1)}
+                        disabled={updateCartLoading || node.quantity < 2}
+                      >
+                        -
+                      </button>
                       <span>{node.quantity}</span>
-                      <button>+</button>
+                      <button 
+                        onClick={() => onUpdateQuantity(node.variant.id, node.quantity + 1)}
+                        disabled={updateCartLoading}
+                      >
+                        +
+                      </button>
                     </Quantity>
-                    <Delete>x</Delete>
+                    <Delete 
+                      disabled={updateCartLoading}
+                      onClick={() => onDeleteItem(node.variant.id)}
+                    >
+                      x
+                    </Delete>
                   </Controls>
                 </div>
               </LineItem>
@@ -123,18 +183,18 @@ const pulse = keyframes`
   }
 `
 
-const CartContainer = styled.div`${({ theme, notifyItemAdded }) => css`
+const CartContainer = styled.div`${({ theme }) => `
   font-size: ${theme.fonts.ml.fontSize};
-  animation: ${notifyItemAdded ? css`${pulse} 0.5s 2`: 'none'};
   position: relative;
 `}`
 
-const OpenCartButton = styled.button`${({ theme }) => `
+const OpenCartButton = styled.button`${({ theme, notifyItemAdded }) => css`
   padding: 0; 
   border: 0;
   background: none;
   outline: none;
   font-size: ${theme.fonts.ml.fontSize};
+  animation: ${notifyItemAdded ? css`${pulse} 0.5s 2`: 'none'};
   cursor: pointer;
 
   &:disabled {
@@ -212,8 +272,8 @@ const Controls = styled.div`${({ theme }) => `
     padding: 3px 8px;
     transition: scale: 0.2s;
 
-    &:last-child {
-      border-radius: 5px;
+    &:disabled {
+      cursor: default;
     }
 
     &:hover {
@@ -245,6 +305,7 @@ const Quantity = styled.div`${({ theme }) => `
 
 const Delete = styled.button`
   margin-right: 20px;
+  border-radius: 20px;
 `
 
 const Checkout = styled.a`${({ theme }) => `

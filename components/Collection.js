@@ -49,7 +49,7 @@ const Collection = ({ handle }) => {
       <CollectionMeta>
         <h2><b>{products.length}</b> {collection.title}</h2>
         {/* TODO: Filters */}
-        <span>Order by: <b>new</b>(todo)</span>
+        <span>for <b>people</b> and <b>the planet</b></span>
       </CollectionMeta>
 
       <ProductGrid>

@@ -22,6 +22,11 @@ const cartReducer =(state, { type, payload }) => {
         ...payload,
         notifyItemAdded: true
       })
+    case 'UPDATE_CART_FROM_CHECKOUT':
+      return persistState({
+        ...state,
+        ...payload,
+      })
     case 'INITIALIZE_CART':
       return persistState({
         ...state,
