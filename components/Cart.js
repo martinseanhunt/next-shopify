@@ -180,7 +180,7 @@ const Cart = () => {
             ))}
           </LineItems>
           <Checkout href={webUrl ? webUrl: '#'}>
-            Checkout (<b>{formatMoney(lineItemsSubtotalPrice)}</b>)
+            Checkout (<b>{updateCartLoading ? '...' : formatMoney(lineItemsSubtotalPrice)}</b>)
           </Checkout>
         </CartDetails>
       )}
@@ -245,6 +245,12 @@ const CartDetails = styled.div`${({ theme }) => `
 const LineItems = styled.div`
   max-height: calc(100vh - 200px);
   overflow: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const LineItem = styled.div`${({ theme }) => `
@@ -323,7 +329,6 @@ const Quantity = styled.div`${({ theme }) => `
 `}`
 
 const Delete = styled.button`
-  margin-right: 20px;
   border-radius: 20px;
 `
 
