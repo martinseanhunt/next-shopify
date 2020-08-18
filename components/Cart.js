@@ -58,21 +58,19 @@ const Cart = () => {
 
   // If we have a cart in localstorage and no current cart lets initialize it
   useEffect(() => {
-    const localCart = typeof window === 'object'
+    let localCart = typeof window === 'object'
       && localStorage.getItem('cart')
     
-    let localJson
-
     try {
-      localJson = JSON.parse(localStorage.getItem('cart'))
+      localCart = localCart && JSON.parse(localStorage.getItem('cart'))
     } catch (e) {
-      console.log('invalid json')
+      console.log('invalid json in saved cart')
     }
           
-    if(!id && localJson && localJson.id) initializeCart({
+    if(!id && localCart && localCart.id) initializeCart({
       variables: {
-        checkoutId: localJson.id,
-        lineItems: localJson.lineItems.edges
+        checkoutId: localCart.id,
+        lineItems: localCart.lineItems.edges
         .filter(({ node }) => !!node)
         .map(({ node }) => ({
           variantId: node.variant.id,
