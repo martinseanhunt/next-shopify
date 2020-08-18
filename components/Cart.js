@@ -4,6 +4,7 @@ import styled, { keyframes, css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
+import formatMoney from '../util/formatMoney'
 import { useCartContext } from '../contexts/cart/CartContext'
 import useHandleClickOutside from '../hooks/useHandleClickOutside'
 
@@ -12,7 +13,8 @@ const Cart = () => {
     id, 
     notifyItemAdded, 
     lineItems, 
-    webUrl 
+    webUrl,
+    lineItemsSubtotalPrice
   }, dispatch } = useCartContext()
 
   const [cartOpen, setCartOpen] = useState(false)
@@ -130,7 +132,9 @@ const Cart = () => {
           {/* TODO: Loading spinner */}
           {cartLoading 
             ? '...' 
-            : lineItems ? lineItems.edges.length : '0'
+            : lineItems 
+              ? lineItems.edges.length && lineItems.edges.reduce((count, { node }) => count + node.quantity, 0)
+              : '0'
           }
         </span>
       </OpenCartButton>
@@ -175,7 +179,9 @@ const Cart = () => {
               </LineItem>
             ))}
           </LineItems>
-          <Checkout href={webUrl ? webUrl: '#'}>Checkout</Checkout>
+          <Checkout href={webUrl ? webUrl: '#'}>
+            Checkout (<b>{formatMoney(lineItemsSubtotalPrice)}</b>)
+          </Checkout>
         </CartDetails>
       )}
     </CartContainer>
@@ -247,6 +253,7 @@ const LineItem = styled.div`${({ theme }) => `
   margin-bottom: 15px;
   grid-gap: 15px;
   text-align: left;
+  align-items: center;
 
   img  { 
     width: 100%;
@@ -259,7 +266,6 @@ const LineItem = styled.div`${({ theme }) => `
     font-weight: ${theme.fonts.weights.bold};
     color: ${theme.colors.darkGrey};
     padding-bottom: 13px;
-    padding-top: 10px;
 
     a:hover {
       text-decoration: underline;
@@ -365,6 +371,7 @@ const CHECKOUT_FRAGMENT = gql`
     }
     lineItemsSubtotalPrice {
       amount
+      currencyCode
     }
     webUrl
   }

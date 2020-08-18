@@ -48,7 +48,7 @@ const Nav = styled.nav`${({ theme, mobile, mobileOpen }) => `
       visability: visable;
     `}
   ` : `
-    margin-right: 30px;
+    margin-right: 20px;
     display: none;
     @media (min-width: ${theme.breakpoints.l}) {
       display: flex;
