@@ -1,19 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 
-// TODO: Probably a beter way to go about this
-
-const useRefetchQuery = (refetch) => {
-  // We always want to trigger a silent refetch after the initial render.
+const useRefetchQuery = _refetch => {
+  // Use this hook to trigger a silent refetch after the initial render of a given component.
   // This way we know the data is up to date for the current user.
+
   useEffect(() => { 
-    // We need to try / catch this because in a development environment
-    // refetch doesn't work properly on hot reload and so the app crashes.
-    // There are some issue with apollo and hot reload in general that would
-    // need to be adressed with more time available
-    try { 
+    // Call refetch after initial render so that data is not stale
+    // When waiting for rebuild of SSG pages
+    try {
       refetch() 
-    } catch { 
-      console.warn('Refetch is not successful after hot reloads')
+    } catch {
+      // This is a known issue with latest nexjts & apollo
+      // https://github.com/apollographql/apollo-client/issues/5870
+      console.log('refetching does not currently work on hot reload')
     }
   }, [])
 }

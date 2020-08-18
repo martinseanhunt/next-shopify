@@ -3,7 +3,7 @@ const theme = {
     xs: '352px',
     s: '580px',
     m: '829px',
-    l: '1025px',
+    l: '1110px',
     xl: '1201px'
   },
   layout: {

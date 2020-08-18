@@ -2,7 +2,10 @@ import { useRouter } from 'next/router'
 
 import { initWithQueries, queryForStaticPaths } from '../../lib/apolloClient'
 import { COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY } from '../../components/Collection'
-import ProductDetails, { PRODUCT_BY_HANDLE_QUERY } from '../../components/ProductDetails'
+import ProductDetails, { 
+  PRODUCT_BY_HANDLE_QUERY, 
+  PRODUCT_BY_HANDLE_DEFAULTS 
+} from '../../components/ProductDetails'
 
 const Product = () => {
   const router = useRouter()
@@ -40,9 +43,8 @@ export const getStaticProps = ({ params }) => initWithQueries([
   {
     query: PRODUCT_BY_HANDLE_QUERY, 
     variables: { 
-      handle: params.productHandle,
-      // TODO: import these defaults
-      selectedOptions: [{ name: '', value: '' }]
+      ...PRODUCT_BY_HANDLE_DEFAULTS,
+      handle: params.productHandle
     }
   }
 ])

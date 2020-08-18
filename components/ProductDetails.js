@@ -13,57 +13,64 @@ import ProductImage from './ProductImage'
 // TODO: This whole component needs refactoring, prioritising speed over
 // refinement at this point ;) 
 
+// TODO: Handle state when we try to add more of somethin than is
+// in stock to the cart
+
 const ProductDetails = ({ productHandle, collectionHandle }) => {
   const { state, dispatch } = useCartContext()
 
   const { data, refetch } = useQuery(PRODUCT_BY_HANDLE_QUERY, { 
     variables: { 
-      handle: productHandle,
-      selectedOptions: [{ name: '', value: '' }]
+      ...PRODUCT_BY_HANDLE_DEFAULTS,
+      handle: productHandle
     }
   })
 
-  // TODO: Handle state when we try to add more ofo somethin than is
-  // in stock to the cart
+  useRefetchQuery(refetch)
+
+  // We can't use the apollo loading state for this because we
+  // only want to show the loading state when we've refetched from an 
+  // option change rather than from a refetch happening from the above which
+  // we want to be silent.
+  const [loadingVariant, setLoadingVariant] = useState(false)
 
   const [createCart, { loading: createCartLoading }] = useMutation(
     CREATE_CART_MUTATION,
-    { onCompleted: data => 
-      dispatch({ 
-        type: 'CREATE_CART',
-        payload: data.checkoutCreate.checkout 
-      }) 
+    { 
+      onCompleted: data => 
+        dispatch({ 
+          type: 'CREATE_CART',
+          payload: data.checkoutCreate.checkout 
+        }) 
     }
   )
 
   const [updateCart, { loading: updateCartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
-    { onCompleted: data => 
-      dispatch({ 
-        type: 'UPDATE_CART',
-        payload: data.checkoutLineItemsReplace.checkout 
-      }) 
+    { 
+      onCompleted: data => 
+        dispatch({ 
+          type: 'UPDATE_CART',
+          payload: data.checkoutLineItemsReplace.checkout 
+        }) 
     }
   )
 
-  // TODO: Can improve this by getting the variant with a lazyQuery and using the node()
-  // query to do the product lookup
-
-  // We can't use the apollo loading state for this because we don't 
-  // only want to show the loading state when we've refetched from an 
-  // option change.
-  const [loadingVariant, setLoadingVariant] = useState(false)
-
-  useRefetchQuery(refetch)
-
   const product = data && data.productByHandle
-  if(!product) return <div>Product not found</div>
+  const variants = product && product.variants.edges
+  const selectedVariant = product && product.variantBySelectedOptions || variants[0].node
 
-  const [selectedOptions, setSelectedOptions] = useState(product.options.reduce((optionsMap, opt) => (
-    { ...optionsMap, [opt.name]: opt.values[0] }
-  ), {}))
+  const [selectedOptions, setSelectedOptions] = useState(product && product.options
+    .reduce((optionsMap, opt) => (
+      { ...optionsMap, [opt.name]: opt.values[0] }
+    ), {})
+  )
 
-  const addToCart = variant => {
+  const [selectedImage, setSelectedImage] = useState(
+    selectedVariant.image || product.images.edges[0] && product.images.edges[0].node.image
+  )
+
+  const onAddToCart = variant => {
     const { id, lineItems } = state
     const newItem = {
       quantity: 1, // TODO
@@ -117,18 +124,13 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
     setLoadingVariant(false)
   }
 
-  const variants = product.variants.edges
-  const selectedVariant = product.variantBySelectedOptions || variants[0].node
+  if(!product) return <div>Product not found</div>
 
   // We need to handle invalid variants e.g. if a particular combination of 
   // options doesn't exist in the shopify admin. This is an edge case but it's
   // still worth safeguarding against.
   const invalidVariant = !loadingVariant && !Object.values(selectedOptions)
     .every(option => selectedVariant.title.includes(option))
-
-  const [selectedImage, setSelectedImage] = useState(
-    selectedVariant.image || product.images.edges[0] && product.images.edges[0].node.image
-  )
 
   return (
     <>
@@ -200,13 +202,19 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
           </Variants>
         )}
         
-        <AddToCart 
-          onClick={() => addToCart(selectedVariant)}
-          disabled={createCartLoading || updateCartLoading || invalidVariant || !selectedVariant.available}
-        >
-          Add{createCartLoading || updateCartLoading && 'ing'} to cart
-        </AddToCart>
-        
+        <Actions>
+          <AddToCart 
+            onClick={() => onAddToCart(selectedVariant)}
+            disabled={createCartLoading || updateCartLoading || invalidVariant || !selectedVariant.available}
+          >
+            Add{createCartLoading || updateCartLoading && 'ing'} to cart
+          </AddToCart>
+
+          <CartNotification visible={state.notifyItemAdded}>
+            Item added to cart 🙌🏼
+          </CartNotification> 
+        </Actions>
+
         {product.descriptionHtml && (
           <>
             <DescriptionLabel>Description:</DescriptionLabel>
@@ -335,10 +343,15 @@ const Variants = styled.div`${({ theme }) => `
   }
 `}`
 
+const Actions = styled.div`
+  position: relative;
+`
+
 const AddToCart = styled.button`${({ theme }) => `
   cursor: pointer;
   border: 1px solid ${theme.colors.medGrey};
   background: ${theme.colors.beigeHighlight};
+  font-size: ${theme.fonts.m.fontSize};
   padding: 7px 40px;
   border-radius: 5px;
   margin-bottom: 35px;
@@ -357,6 +370,23 @@ const AddToCart = styled.button`${({ theme }) => `
   }
 `}`
 
+const CartNotification = styled.div`${({ theme, visible }) => `
+  font-size: ${theme.fonts.m.fontSize};
+  background: ${theme.colors.lightBeige};
+  border: 1px solid ${theme.colors.beigeHighlight};
+  border-radius: 5px;
+  padding: 9px;
+  opacity: ${visible ? 1 : 0}; 
+  visibility: ${visible ? 'visible' : 'hidden'}; 
+  transform: scale(${visible ? 1 : 0.7});
+  pointer-events: none;
+  transition: all 0.2s;
+  text-align: center;
+  position: absolute;
+  top: -1px;
+  left 160px;
+`}`
+
 const DescriptionLabel = styled.span`${({ theme }) => `
   color: ${theme.colors.medDarkGrey};
   font-weight: ${theme.fonts.weights.medium};
@@ -367,13 +397,14 @@ const DescriptionLabel = styled.span`${({ theme }) => `
 const HtmlDescription = styled.div`${({ theme }) => `
   font-size: ${theme.fonts.m.fontSize};
   line-height: ${theme.fonts.m.lineHeight};
+  max-width: 580px; 
 
   p {
     margin-bottom: 20px;
   }
 `}`
 
-const VARIANT_FRAGMENT = gql`
+export const VARIANT_FRAGMENT = gql`
   fragment VariantFragment on ProductVariant {
     available
     availableForSale
@@ -451,5 +482,9 @@ export const PRODUCT_BY_HANDLE_QUERY = gql`
   }
   ${PRODUCT_DETAILS_FRAGMENT}
 `
+
+export const PRODUCT_BY_HANDLE_DEFAULTS = {
+  selectedOptions: [{ name: '', value: '' }]
+}
 
 export default ProductDetails

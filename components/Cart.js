@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { gql, useMutation } from '@apollo/client'
-import styled from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
 import { useCartContext } from '../contexts/cart/CartContext'
+import { VARIANT_FRAGMENT } from './ProductDetails'
 
 const Cart = () => {
   const { state: { 
@@ -48,58 +49,49 @@ const Cart = () => {
   useEffect(() => {
     if(notifyItemAdded) setTimeout(() => 
       dispatch({ type: 'SET_NOTIFY_ITEM_ADDED', payload: false })
-    , 3000)
+    , 2000)
     
   }, [notifyItemAdded])
 
   return (
-    <CartContainer>
-      <CartNotification visible={notifyItemAdded}>
-        Item added to cart 🙌🏼
-      </CartNotification>
-      
-        <a href={webUrl ? webUrl: '#'}>
-          <FontAwesomeIcon icon={faShoppingBasket} />
-          <span>
-            {/* TODO: Loading spinner */}
-            {cartLoading 
-              ? '...' 
-              : lineItems ? lineItems.edges.length : '0'
-            }
-          </span>
-        </a>
-      
+    <CartContainer notifyItemAdded={notifyItemAdded}>
+      <a href={webUrl ? webUrl: '#'}>
+        <FontAwesomeIcon icon={faShoppingBasket} />
+        <span>
+          {/* TODO: Loading spinner */}
+          {cartLoading 
+            ? '...' 
+            : lineItems ? lineItems.edges.length : '0'
+          }
+        </span>
+      </a>
     </CartContainer>
   )
 }
 
-const CartContainer = styled.div`${({ theme }) => `
+const pulse = keyframes`
+  0% {
+    transform: scale(1);
+  }
+
+  70% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+`
+
+const CartContainer = styled.div`${({ theme, notifyItemAdded }) => css`
   font-size: ${theme.fonts.ml.fontSize};
-  position: relative;
+  animation: ${notifyItemAdded ? css`${pulse} 0.5s 2`: 'none'};
 
   span {
     font-size: ${theme.fonts.m.fontSize};
     font-weight: ${theme.fonts.weights.medium};
     padding-left: 5px;
   }
-`}`
-
-const CartNotification = styled.div`${({ theme, visible }) => `
-  position: absolute; 
-  font-size: ${theme.fonts.m.fontSize};
-  background: ${theme.colors.lightBeige};
-  border: 1px solid ${theme.colors.beigeHighlight};
-  border-radius: 10px;
-  padding: 8px 3px;
-  opacity: ${visible ? 1 : 0}; 
-  visibility: ${visible ? 'visible' : 'hidden'}; 
-  transform: scale(${visible ? 1 : 0.7});
-  pointer-events: none;
-  top: -50px;
-  right: 0;
-  width: 150px;
-  transition: all 0.2s;
-  text-align: center;
 `}`
 
 const CHECKOUT_FRAGMENT = gql`
@@ -112,14 +104,7 @@ const CHECKOUT_FRAGMENT = gql`
           quantity
           title
           variant {
-            id
-            image {
-              transformedSrc(maxWidth: 200)
-            }
-            priceV2 {
-              amount
-              currencyCode
-            }
+            ...VariantFragment
           }
         }
       }
@@ -129,6 +114,7 @@ const CHECKOUT_FRAGMENT = gql`
     }
     webUrl
   }
+  ${VARIANT_FRAGMENT}
 `
 
 export const CREATE_CART_MUTATION = gql`

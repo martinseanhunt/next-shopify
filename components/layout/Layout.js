@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
@@ -7,33 +10,43 @@ import Cart from '../Cart'
 
 // TODO: Refactor / compose
 
-const Layout = ({ children }) => (
-  <Container>
-    <Header>
-      <Link href="/">
-        <a><Logo adjustTop={7} /></a>
-      </Link>
+const Layout = ({ children }) => {
+  const [mobileOpen, setMobileOpen] = useState(false)
 
-      <Menu>
-        <Navigation />
-        <Cart />
-      </Menu>
-    </Header>
-    <main>
-      {children}
-    </main>
-    <Footer>
-      <Link href="/">
-        <a>
-          <Logo 
-            size={100}
-            adjustTop={-9}
-          />
-        </a>
-      </Link>
-    </Footer>
-  </Container>
-)
+  return (
+    <Container>
+      <Header>
+        <Link href="/">
+          <a><Logo adjustTop={7} /></a>
+        </Link>
+
+        <Menu>
+          <MobileNavToggle onClick={() => setMobileOpen(!mobileOpen)}>
+            <FontAwesomeIcon icon={faBars} />
+          </MobileNavToggle>
+          <Navigation />
+          <Cart />
+        </Menu>
+      </Header>
+      <MobileNav>
+        <Navigation mobileOpen={mobileOpen} mobile/>
+      </MobileNav>
+      <main>
+        {children}
+      </main>
+      <Footer>
+        <Link href="/">
+          <a>
+            <Logo 
+              size={100}
+              adjustTop={-9}
+            />
+          </a>
+        </Link>
+      </Footer>
+    </Container>
+  )
+}
 
 const Container = styled.div`${({ theme }) => `
   max-width: ${theme.layout.maxWidth + theme.layout.gutters}px;
@@ -48,12 +61,38 @@ const Header = styled.header`${({ theme }) => `
   align-items: flex-end;
   border-bottom : 1px solid ${theme.colors.medGrey}; 
   margin-bottom: ${theme.layout.verticalRythm}px;
+  position: relative;
 `}`
 
-const Menu = styled.main`
+const Menu = styled.main`${({ theme }) => `
   display: flex;
   align-items: center;
-`
+  position: relative;
+  top: -7px;
+
+  @media (min-width: ${theme.breakpoints.l}) {
+    position: static;
+  }
+`}`
+
+const MobileNavToggle = styled.button`${({ theme }) => `
+  border: none;
+  padding: 0;
+  margin-right: 20px;
+  cursor: pointer;
+  outline: none;
+  font-size: ${theme.fonts.ml.fontSize};
+  
+  @media (min-width: ${theme.breakpoints.l}) {
+    display: none;
+  }
+`}`
+
+const MobileNav = styled.div`${({ theme }) => `
+  @media (min-width: ${theme.breakpoints.l}) {
+    display: none;
+  }
+`}`
 
 const Footer = styled.header`${({ theme }) => `
   display: flex;
