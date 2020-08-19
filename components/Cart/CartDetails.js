@@ -34,9 +34,7 @@ const CartDetails = ({
         : node.quantity
     }))
 
-    // Set a loading state for the individual line item as the apollo loading
-    // state will be true for all line items. and we only wany to visually
-    // signify this one is loading
+    // Seperate loading state for the individual line item
     setUpdatingItemId(variantId)
 
     await updateCart({

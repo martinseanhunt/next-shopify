@@ -63,6 +63,8 @@ const LineItem = ({
   </Item>
 )
 
+// TODO: The styles here needs some work, use and extend other common components
+
 const Item = styled.div`${({ theme }) => `
   display: grid;
   grid-template-columns: 70px 1fr;
