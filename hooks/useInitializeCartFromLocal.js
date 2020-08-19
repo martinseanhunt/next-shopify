@@ -33,8 +33,6 @@ export const useInitializeCartFromLocal = () => {
         return console.log('invalid json in saved cart')
       }
 
-      console.log(localCart)
-
       const isValidCart = localCart 
         && localCart.id 
         && localCart.lineItems
