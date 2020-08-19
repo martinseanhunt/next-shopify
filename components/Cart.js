@@ -4,9 +4,10 @@ import styled, { keyframes, css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 
-import formatMoney from '../util/formatMoney'
 import { useCartContext } from '../contexts/cart/CartContext'
 import useHandleClickOutside from '../hooks/useHandleClickOutside'
+import useInitializeCartFromLocal from '../hooks/useInitializeCartFromLocal'
+import formatMoney from '../util/formatMoney'
 
 const Cart = () => {
   const { state: { 
@@ -23,20 +24,6 @@ const Cart = () => {
 
   const [cartDetailsRef, openCartButtonRef] = useHandleClickOutside(
     () => setCartOpen(false)
-  )
-
-  const [initializeCart, { loading: cartLoading }] = useMutation(
-    UPDATE_CART_MUTATION,
-    { 
-      onCompleted: data => 
-        dispatch({ 
-          type: 'INITIALIZE_CART',
-          payload: data.checkoutLineItemsReplace.checkout 
-        })
-      ,
-      onError: error => 
-        console.log("Couldn't load the cart, it's probably expired")
-    }
   )
 
   // TODO: We could use an optimistic response here so that we show the updated 
@@ -56,34 +43,7 @@ const Cart = () => {
     }
   )
 
-  // If we have a cart in localstorage and no current cart lets initialize it
-  useEffect(() => {
-    let localCart = typeof window === 'object'
-      && localStorage.getItem('cart')
-    
-    try {
-      localCart = localCart && JSON.parse(localStorage.getItem('cart'))
-    } catch (e) {
-      console.log('invalid json in saved cart')
-    }
-
-    const isValidCart = localCart 
-      && localCart.id 
-      && localCart.lineItems
-      && localCart.lineItems.edges
-          
-    if(!id && isValidCart) initializeCart({
-      variables: {
-        checkoutId: localCart.id,
-        lineItems: localCart.lineItems.edges
-        .filter(({ node }) => !!node)
-        .map(({ node }) => ({
-          variantId: node.variant.id,
-          quantity: node.quantity
-        }))
-      }
-    })
-  }, [])
+  const cartLoading = useInitializeCartFromLocal()
 
   useEffect(() => {
     if(notifyItemAdded) setTimeout(() => 
