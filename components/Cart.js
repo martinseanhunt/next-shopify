@@ -7,27 +7,33 @@ import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
 import { useCartContext } from '../contexts/cart/CartContext'
 import useHandleClickOutside from '../hooks/useHandleClickOutside'
 import useInitializeCartFromLocal from '../hooks/useInitializeCartFromLocal'
+import apolloErrorHandler from '../util/apolloErrorHandler'
 import formatMoney from '../util/formatMoney'
 
 const Cart = () => {
   const { state: { 
-    id, 
+    id: checkoutId, 
     notifyItemAdded, 
     lineItems, 
     webUrl,
     lineItemsSubtotalPrice
   }, dispatch } = useCartContext()
 
+  const cartLoading = useInitializeCartFromLocal()
   const [cartOpen, setCartOpen] = useState(false)
   const [updatingItemId, setUpdatingItemId] = useState(null)
   const [deletingItemId, setDeletingItemId] = useState(null)
+
+  // When we navigate away from the site, there's a small delay where it 
+  // looks like nothing is happening so lets account for that with this.
+  const [loadingCheckoutLink, setLoadingCheckoutLink] = useState(false)
 
   const [cartDetailsRef, openCartButtonRef] = useHandleClickOutside(
     () => setCartOpen(false)
   )
 
-  // TODO: We could use an optimistic response here so that we show the updated 
-  // quantities immediately and do the legwork behind the scenes
+  // TODO: We could use an optimistic response here so that we show the  
+  // updated quantities immediately and do the legwork behind the scenes
   const [updateCart, { loading: updateCartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
     { 
@@ -39,12 +45,12 @@ const Cart = () => {
           type: 'UPDATE_CART_FROM_CHECKOUT',
           payload: data.checkoutLineItemsReplace.checkout 
         }) 
-      }
+      },
+      onError: apolloErrorHandler
     }
   )
-
-  const cartLoading = useInitializeCartFromLocal()
-
+  
+  // Clear the added to cart notification after x time
   useEffect(() => {
     if(notifyItemAdded) setTimeout(() => 
       dispatch({ type: 'SET_NOTIFY_ITEM_ADDED', payload: false })
@@ -53,19 +59,21 @@ const Cart = () => {
   }, [notifyItemAdded])
 
   const onUpdateQuantity = async (variantId, quantity) => {
-    const newLineItems = lineItems.edges
-    .map(({ node }) => ({
+    const newLineItems = lineItems.edges.map(({ node }) => ({
       variantId: node.variant.id,
       quantity: variantId === node.variant.id 
         ? quantity
         : node.quantity
     }))
 
+    // Set a loading state for the individual line item as the apollo loading
+    // state will be true for all line items. and we only wany to visually
+    // signify this one is loading
     setUpdatingItemId(variantId)
 
     await updateCart({
       variables: {
-        checkoutId: id,
+        checkoutId,
         lineItems: newLineItems
       }
     })
@@ -74,46 +82,48 @@ const Cart = () => {
   }
 
   const onDeleteItem = async (variantId) => {
+    // Seperate loading state for the individual variants delete button
     setDeletingItemId(variantId)
     
-    await updateCart({
-      variables: {
-        checkoutId: id,
-        lineItems: lineItems.edges
-          .filter(({ node }) => node.variant.id !== variantId)
-          .map(({ node }) => ({
-            variantId: node.variant.id,
-            quantity: node.quantity
-          }))
-      }
-    })
+    await updateCart({ variables: {
+      checkoutId,
+      lineItems: lineItems.edges
+        .filter(({ node }) => node.variant.id !== variantId)
+        .map(({ node }) => ({
+          variantId: node.variant.id,
+          quantity: node.quantity
+        }))
+    } })
 
     setDeletingItemId(null)
   }
+
+  const hasLineItems = lineItems && lineItems.edges && lineItems.edges.length
 
   return (
     <CartContainer>
       <OpenCartButton 
         onClick={() => setCartOpen(!cartOpen)}
         ref={openCartButtonRef}
-        disabled={!lineItems || !lineItems.edges.length}
+        disabled={!hasLineItems}
         notifyItemAdded={notifyItemAdded}
       >
         <FontAwesomeIcon icon={faShoppingBasket} />
         <span>
-          {/* TODO: Loading spinner */}
           {cartLoading 
             ? '...' 
-            : lineItems 
-              ? lineItems.edges.length && lineItems.edges.reduce((count, { node }) => count + node.quantity, 0)
+            : hasLineItems 
+              ? lineItems.edges.reduce((count, { node }) => 
+                  count + node.quantity
+                , 0)
               : '0'
           }
         </span>
       </OpenCartButton>
-      {cartOpen && (
+      {cartOpen && hasLineItems && (
         <CartDetails ref={cartDetailsRef}>
           <LineItems>
-            {lineItems.edges.length && lineItems.edges.map(({ node }) => (
+            {lineItems.edges.map(({ node }) => (
               <LineItem key={node.id}>
                 <img src={node.variant.image.transformedSrc} alt={node.title} />
 
@@ -127,14 +137,25 @@ const Cart = () => {
                   <Controls>
                     <Quantity>
                       <button 
-                        onClick={() => onUpdateQuantity(node.variant.id, node.quantity - 1)}
+                        onClick={() => onUpdateQuantity(
+                          node.variant.id, 
+                          node.quantity - 1
+                        )}
                         disabled={updateCartLoading || node.quantity < 2}
                       >
                         -
                       </button>
-                      <span>{node.variant.id === updatingItemId ? '...' : node.quantity}</span>
+                      <span>
+                        {node.variant.id === updatingItemId 
+                          ? '...' 
+                          : node.quantity
+                        }
+                      </span>
                       <button 
-                        onClick={() => onUpdateQuantity(node.variant.id, node.quantity + 1)}
+                        onClick={() => onUpdateQuantity(
+                          node.variant.id, 
+                          node.quantity + 1
+                        )}
                         disabled={updateCartLoading}
                       >
                         +
@@ -151,8 +172,22 @@ const Cart = () => {
               </LineItem>
             ))}
           </LineItems>
-          <Checkout href={webUrl ? webUrl: '#'}>
-            Checkout (<b>{updateCartLoading ? '...' : formatMoney(lineItemsSubtotalPrice)}</b>)
+          <Checkout 
+            href={webUrl ? webUrl: '#'}
+            onClick={() => setLoadingCheckoutLink(true)}
+          >
+            {loadingCheckoutLink ? '...' : (
+              <>
+                Checkout (
+                  <b>
+                    {updateCartLoading
+                      ? '...' 
+                      : formatMoney(lineItemsSubtotalPrice)
+                    }
+                  </b>
+                )
+              </>
+            )}
           </Checkout>
         </CartDetails>
       )}

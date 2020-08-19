@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client'
 
 import { useCartContext } from '../contexts/cart/CartContext'
 import { UPDATE_CART_MUTATION } from '../components/Cart'
+import apolloErrorHandler from '../util/apolloErrorHandler'
 
 // If we have a cart in localstorage and no current in the cart context cart lets initialize it
 export const useInitializeCartFromLocal = () => {
@@ -17,8 +18,7 @@ export const useInitializeCartFromLocal = () => {
           payload: data.checkoutLineItemsReplace.checkout 
         })
       ,
-      onError: error => 
-        console.log("Couldn't load the cart, it's probably expired")
+      onError: apolloErrorHandler
     }
   )
 
@@ -32,8 +32,6 @@ export const useInitializeCartFromLocal = () => {
       } catch (e) {
         return console.log('invalid json in saved cart')
       }
-
-      console.log(localCart)
 
       const isValidCart = localCart 
         && localCart.id 
