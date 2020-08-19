@@ -8,7 +8,7 @@ import useHandleClickOutside from '../../hooks/useHandleClickOutside'
 
 import Logo from '../common/Logo'
 import Navigation from './Navigation'
-import Cart from '../Cart'
+import Cart from '../Cart/Cart'
 
 // TODO: Refactor / compose
 

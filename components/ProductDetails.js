@@ -7,7 +7,7 @@ import Head from 'next/head'
 import formatMoney from '../util/formatMoney'
 import { useCartContext } from '../contexts/cart/CartContext'
 import useRefetchQuery from '../hooks/useRefetchQuery'
-import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart'
+import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart/Cart'
 
 import ProductImage from './ProductImage'
 

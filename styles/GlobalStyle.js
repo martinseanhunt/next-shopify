@@ -1,5 +1,10 @@
 import { createGlobalStyle } from 'styled-components'
 
+// TODO: Some of the styles in various components have lots in common with 
+// other styles across the application. Recompose some of them in to single 
+// reusuble componentsin /components/common which can be imported and extended
+// as needed. 
+
 const reset = `
   /* http://meyerweb.com/eric/tools/css/reset/ 
   v2.0 | 20110126
