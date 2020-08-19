@@ -178,8 +178,8 @@ const ProductDetails = ({ productHandle, collectionHandle }) => {
 
           <Price>
             {loadingVariant 
-              // TODO: refactor
-              ? '...' // TODO: loading spinner
+              // TODO: Proper loading state
+              ? '...'
               : invalidVariant 
                 ? `This option is currently unavailable`
                 : (
