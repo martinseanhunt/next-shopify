@@ -94,8 +94,10 @@ const Item = styled.div`${({ theme }) => `
   }
 `}`
 
+// TODO: Use ProductImage component for this - it needs a few tweaks first
+// and I don't have time right now.
 const Placeholder = styled.div`
-  background: ${({ theme }) => theme.colors.medGrey};
+  background: ${({ theme }) => theme.colors.lightGrey};
   height: 70px;
   width: 100%;
 `
