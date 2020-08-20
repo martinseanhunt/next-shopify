@@ -27,6 +27,8 @@ export const useInitializeCartFromLocal = () => {
     const checkLocalStorageAndInitialize = () => {
       let localCart = typeof window === 'object'
         && localStorage.getItem('cart')
+
+      if(!localCart) return
       
       try {
         localCart = localCart && JSON.parse(localStorage.getItem('cart'))
