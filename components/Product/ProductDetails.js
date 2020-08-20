@@ -76,17 +76,16 @@ const ProductDetails = ({
             available={selectedVariant.available}
           />
           
-          {variants.length > 1 && (
-            <ProductOptions 
-              options={options}
-              onQuantityChange={e => 
-                setQuantitySelected(parseInt(e.target.value))
-              }
-              quantitySelected={quantitySelected}
-              selectedOptions={selectedOptions}
-              onOptionChange={onOptionChange}
-            />
-          )}
+          <ProductOptions 
+            options={options}
+            onQuantityChange={e => 
+              setQuantitySelected(parseInt(e.target.value))
+            }
+            quantitySelected={quantitySelected}
+            selectedOptions={selectedOptions}
+            onOptionChange={onOptionChange}
+            hasVariants={variants.length > 1}
+          />
           
           <AddToCart 
             selectedVariant={selectedVariant}

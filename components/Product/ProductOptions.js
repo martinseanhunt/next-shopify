@@ -5,11 +5,12 @@ const ProductOptions = ({
   quantitySelected,
   onQuantityChange,
   selectedOptions,
-  onOptionChange
+  onOptionChange,
+  hasVariants
 }) => (
   <>
     <Options>
-      {options.map(({ name, values }) => (
+      {hasVariants && options.map(({ name, values }) => (
         <label htmlFor={name} key={name}>{name}: 
           <select 
             name={name} 
