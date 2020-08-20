@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import styled, { keyframes, css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShoppingBasket } from '@fortawesome/free-solid-svg-icons'
@@ -9,26 +10,34 @@ const OpenCartButton = ({
   lineItems,
   notifyItemAdded,
   cartLoading
-}) => (
-  <ButtonContainer 
-    onClick={onOpenCart}
-    ref={openCartButtonRef}
-    disabled={!hasLineItems}
-    notifyItemAdded={notifyItemAdded}
-  >
-    <FontAwesomeIcon icon={faShoppingBasket} />
-    <span>
-      {cartLoading 
-        ? '...' 
-        : hasLineItems 
-          ? lineItems.edges.reduce((count, { node }) => 
-              count + node.quantity
-            , 0)
-          : '0'
-      }
-    </span>
-  </ButtonContainer>
-)
+}) => {
+  // Use this to delay the display of the count / loading spinner on first 
+  // render otherwise there can be a momentary flash of 0 before the
+  // apollo query is run and loading state kicks in (after first render).
+  const [initialized, setInitialized] = useState(false)
+  useEffect(() => { setInitialized(true) }, [])
+  
+  return (
+    <ButtonContainer 
+      onClick={onOpenCart}
+      ref={openCartButtonRef}
+      disabled={!hasLineItems}
+      notifyItemAdded={notifyItemAdded}
+    >
+      <FontAwesomeIcon icon={faShoppingBasket} />
+      <span>
+        {initialized && (cartLoading 
+          ? '...' 
+          : hasLineItems 
+            ? lineItems.edges.reduce((count, { node }) => 
+                count + node.quantity
+              , 0)
+            : '0'
+        )}
+      </span>
+    </ButtonContainer>
+  )
+}
 
 const pulse = keyframes`
   0% {
