@@ -4,12 +4,12 @@ import styled from 'styled-components'
 import Link from 'next/link'
 import Head from 'next/head'
 
-import formatMoney from '../util/formatMoney'
-import { useCartContext } from '../contexts/cart/CartContext'
-import useRefetchQuery from '../hooks/useRefetchQuery'
-import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from './Cart/Cart'
+import formatMoney from '../../util/formatMoney'
+import { useCartContext } from '../../contexts/cart/CartContext'
+import useRefetchQuery from '../../hooks/useRefetchQuery'
+import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from '../Cart/Cart'
 
-import ProductImage from './ProductImage'
+import ProductImage from '../common/ProductImage'
 
 // TODO: This whole component needs refactoring, prioritising speed over
 // refinement at this point ;) 
@@ -374,7 +374,7 @@ const AddToCart = styled.button`${({ theme }) => `
   margin-bottom: 35px;
 
   &:disabled {
-    color: ${theme.colors.medGrey};
+    color: ${theme.colors.medDarkGrey};
     cursor: default;
 
     &:hover {

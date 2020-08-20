@@ -2,8 +2,8 @@ import React, { useContext, createContext, useReducer } from 'react'
 
 import cartReducer, { initialState } from './cartReducer'
 
-// TODO This whole context should be replaced by the Apollo cache
-// No time to redo this
+// TODO: This context should probably be replaced by the Apollo cache but this
+// enabled me to set things up a lot quicker 
 
 const CartContext = createContext()
 const useCartContext = () => useContext(CartContext)

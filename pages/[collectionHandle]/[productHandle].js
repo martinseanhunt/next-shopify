@@ -7,7 +7,7 @@ import {
 import ProductDetails, { 
   PRODUCT_BY_HANDLE_QUERY, 
   PRODUCT_BY_HANDLE_DEFAULTS 
-} from '../../components/ProductDetails'
+} from '../../components/ProductDetails/ProductDetails'
 
 const Product = () => {
   const router = useRouter()

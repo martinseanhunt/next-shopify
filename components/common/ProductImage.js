@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage } from '@fortawesome/free-solid-svg-icons'
 
-// TODO: move this in to common and use it in the cart lineItems also
+// TODO: Use this in the cart lineItems also - needs a few tweaks first
 
 const ProductImage = ({ image, showOutOfStock, autoHeight }) => (
   <ImageContainer 
