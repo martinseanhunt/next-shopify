@@ -12,25 +12,27 @@ const Navigation = ({ mobile, mobileOpen }) => {
   const collections = data && data.collections.edges
 
   return (
-    <Nav mobile={mobile} mobileOpen={mobileOpen}>
-      {collections && collections
-        .filter(({ node }) => node.handle !== 'featured')
-        .map(({ node }) => (
-          <Link 
-            key={node.handle} 
-            href='/[collectionHandle]'
-            as={`/${node.handle}`}
-          >
-            <a className={node.handle === collectionHandle 
-              ? 'active' 
-              : undefined}
+    <>
+      <Nav mobile={mobile} mobileOpen={mobileOpen}>
+        {collections && collections
+          .filter(({ node }) => node.handle !== 'featured')
+          .map(({ node }) => (
+            <Link 
+              key={node.handle} 
+              href='/[collectionHandle]'
+              as={`/${node.handle}`}
             >
-              {node.title}
-            </a>
-          </Link>
-        ))
-      }
-    </Nav>
+              <a className={node.handle === collectionHandle 
+                ? 'active' 
+                : undefined}
+              >
+                {node.title}
+              </a>
+            </Link>
+          ))
+        }
+      </Nav>
+    </>
   )
 }
 

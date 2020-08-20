@@ -7,19 +7,21 @@ const ProductPrice = ({
   price,
   available
 }) => (
-  <Price>
-    {loadingVariant 
-      ? '...'
-      : invalidVariant 
-        ? `This option is currently unavailable`
-        : (
-          <span>
-            {formatMoney(price)}
-            {!available && ' (Out of stock)'}
-          </span>
-        )     
-    }
-  </Price>
+  <>
+    <Price>
+      {loadingVariant 
+        ? '...'
+        : invalidVariant 
+          ? `This option is currently unavailable`
+          : (
+            <span>
+              {formatMoney(price)}
+              {!available && ' (Out of stock)'}
+            </span>
+          )     
+      }
+    </Price>
+  </>
 )
 
 const Price = styled.span`${({ theme }) => `

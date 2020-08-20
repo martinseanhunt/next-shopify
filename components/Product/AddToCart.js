@@ -78,18 +78,20 @@ const AddToCart = ({
     || !selectedVariant.available
 
   return (
-    <Actions>
-      <AddToCartButton
-        onClick={() => onAddToCart(selectedVariant)}
-        disabled={disabled}
-      >
-        Add{loading && 'ing'} to cart{loading && '...'}
-      </AddToCartButton>
+    <>
+      <Actions>
+        <AddToCartButton
+          onClick={() => onAddToCart(selectedVariant)}
+          disabled={disabled}
+        >
+          Add{loading && 'ing'} to cart{loading && '...'}
+        </AddToCartButton>
 
-      <CartNotification visible={state.notifyItemAdded}>
-        Item added to cart 🙌🏼
-      </CartNotification> 
-    </Actions>
+        <CartNotification visible={state.notifyItemAdded}>
+          Item added to cart 🙌🏼
+        </CartNotification> 
+      </Actions>
+    </>
   )
 }
 

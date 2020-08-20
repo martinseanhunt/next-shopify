@@ -7,32 +7,34 @@ const ProductOptions = ({
   selectedOptions,
   onOptionChange
 }) => (
-  <Options>
-    {options.map(({ name, values }) => (
-      <label htmlFor={name} key={name}>{name}: 
-        <select 
-          name={name} 
-          id={name} 
-          value={selectedOptions[name]}
-          onChange={onOptionChange}
-        >
-          {values.map(v => (
-            <option key={v} value={v}>{v}</option>
-          ))}
-        </select>
-      </label>
-    ))}
+  <>
+    <Options>
+      {options.map(({ name, values }) => (
+        <label htmlFor={name} key={name}>{name}: 
+          <select 
+            name={name} 
+            id={name} 
+            value={selectedOptions[name]}
+            onChange={onOptionChange}
+          >
+            {values.map(v => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+        </label>
+      ))}
 
-    <label htmlFor="quantity">Quantity: 
-      <input 
-        value={quantitySelected} 
-        id="quantity" 
-        type="number"
-        min="1"
-        onChange={onQuantityChange}
-      />
-    </label>
-  </Options>
+      <label htmlFor="quantity">Quantity: 
+        <input 
+          value={quantitySelected} 
+          id="quantity" 
+          type="number"
+          min="1"
+          onChange={onQuantityChange}
+        />
+      </label>
+    </Options>
+  </>
 )
 
 const Options = styled.div`${({ theme }) => `

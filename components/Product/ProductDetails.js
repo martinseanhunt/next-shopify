@@ -60,43 +60,45 @@ const ProductDetails = ({
   }
 
   return (
-    <ProductGrid>
-      <ImageGallery 
-        selectedVariantImage={selectedVariant.image}
-        images={images}
-      />
-
-      <ProductInfo>
-        <Title>{title}</Title>
-        <ProductPrice 
-          loadingVariant={loadingVariant}
-          invalidVariant={invalidVariant}
-          price={selectedVariant.priceV2}
-          available={selectedVariant.available}
+    <>
+      <ProductGrid>
+        <ImageGallery 
+          selectedVariantImage={selectedVariant.image}
+          images={images}
         />
-        
-        {variants.length > 1 && (
-          <ProductOptions 
-            options={options}
-            onQuantityChange={e => 
-              setQuantitySelected(parseInt(e.target.value))
-            }
-            quantitySelected={quantitySelected}
-            selectedOptions={selectedOptions}
-            onOptionChange={onOptionChange}
+
+        <ProductInfo>
+          <Title>{title}</Title>
+          <ProductPrice 
+            loadingVariant={loadingVariant}
+            invalidVariant={invalidVariant}
+            price={selectedVariant.priceV2}
+            available={selectedVariant.available}
           />
-        )}
-        
-        <AddToCart 
-          selectedVariant={selectedVariant}
-          invalidVariant={invalidVariant}
-          quantitySelected={quantitySelected}
-        />
+          
+          {variants.length > 1 && (
+            <ProductOptions 
+              options={options}
+              onQuantityChange={e => 
+                setQuantitySelected(parseInt(e.target.value))
+              }
+              quantitySelected={quantitySelected}
+              selectedOptions={selectedOptions}
+              onOptionChange={onOptionChange}
+            />
+          )}
+          
+          <AddToCart 
+            selectedVariant={selectedVariant}
+            invalidVariant={invalidVariant}
+            quantitySelected={quantitySelected}
+          />
 
-        {descriptionHtml && <ProductDescription html={descriptionHtml} />}
-        
-      </ProductInfo>
-    </ProductGrid>
+          {descriptionHtml && <ProductDescription html={descriptionHtml} />}
+          
+        </ProductInfo>
+      </ProductGrid>
+    </>
   )
 }
 
