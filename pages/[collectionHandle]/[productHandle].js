@@ -4,19 +4,19 @@ import { initWithQueries, queryForStaticPaths } from '../../lib/apolloClient'
 import { 
   COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY 
 } from '../../components/Collection/Collection'
-import ProductDetails, { 
+import Product, { 
   PRODUCT_BY_HANDLE_QUERY, 
   PRODUCT_BY_HANDLE_DEFAULTS 
-} from '../../components/ProductDetails/ProductDetails'
+} from '../../components/Product/Product'
 
-const Product = () => {
+const ProductPage = () => {
   const router = useRouter()
   const { 
     collectionHandle, 
     productHandle 
   } = router.query
 
-  return <ProductDetails 
+  return <Product 
     collectionHandle={collectionHandle}
     productHandle={productHandle}
   />
@@ -51,4 +51,4 @@ export const getStaticProps = ({ params }) => initWithQueries([
   }
 ])
 
-export default Product
+export default ProductPage
