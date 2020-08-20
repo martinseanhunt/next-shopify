@@ -14,7 +14,8 @@ const CartDetails = ({
   // TODO: Think about whether it's best to get this data straight from
   // the context or just pass it down from the parent via props...
   // I'm assuming it would be more performant to pass down from the parent
-  // and reduce calls to useCartContext but I want to do look in to that more
+  // and reduce calls to useCartContext but I want to think more about the 
+  // trade offs here.
   const { state: { 
     id: checkoutId, 
     lineItems, 

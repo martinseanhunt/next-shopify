@@ -4,7 +4,7 @@ import Head from 'next/head'
 
 import useRefetchQuery from '../hooks/useRefetchQuery'
 import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
-import Hero from './Hero'
+import Hero from './common/Hero'
 
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 

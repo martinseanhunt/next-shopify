@@ -5,8 +5,6 @@ import styled from 'styled-components'
 
 import { COLLECTIONS_QUERY } from '../Collection'
 
-// TODO: Move this component
-
 const Navigation = ({ mobile, mobileOpen }) => {
   const { data } = useQuery(COLLECTIONS_QUERY)
   const { query: { collectionHandle } } = useRouter()
@@ -23,7 +21,10 @@ const Navigation = ({ mobile, mobileOpen }) => {
             href='/[collectionHandle]'
             as={`/${node.handle}`}
           >
-            <a className={node.handle === collectionHandle ? 'active' : undefined}>
+            <a className={node.handle === collectionHandle 
+              ? 'active' 
+              : undefined}
+            >
               {node.title}
             </a>
           </Link>
