@@ -5,15 +5,17 @@ import { faImage } from '@fortawesome/free-solid-svg-icons'
 // TODO: Use this in the cart lineItems also - needs a few tweaks first
 
 const ProductImage = ({ image, showOutOfStock, autoHeight }) => (
-  <ImageContainer 
-    showOutOfStock={showOutOfStock}
-    autoHeight={autoHeight}
-  >
-    {image 
-      ? <img src={image.transformedSrc} alt={image.altText} /> 
-      : <FontAwesomeIcon icon={faImage} />
-    }
-  </ImageContainer>
+  <>
+    <ImageContainer 
+      showOutOfStock={showOutOfStock}
+      autoHeight={autoHeight}
+    >
+      {image 
+        ? <img src={image.transformedSrc} alt={image.altText} /> 
+        : <FontAwesomeIcon icon={faImage} />
+      }
+    </ImageContainer>
+  </>
 )
 
 const ImageContainer = styled.div`${({ 

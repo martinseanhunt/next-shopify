@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -15,6 +16,10 @@ const Header = () => {
   const [mobileNavRef, mobileNavToggleRef] = useHandleClickOutside(() => 
     setMobileOpen(false)
   )
+  const { query: { collectionHandle } } = useRouter()
+
+  // Close the mobile menu once we've navigated to a new collection
+  useEffect(() => { if(mobileOpen) setMobileOpen(false) }, [collectionHandle])
 
   return (
     <>
@@ -35,7 +40,12 @@ const Header = () => {
         </Menu>
       </HeaderContainer>
       <MobileNav ref={mobileNavRef}>
-        <Navigation mobileOpen={mobileOpen} mobile/>
+        <Navigation 
+          mobileOpen={mobileOpen} 
+          mobile
+          onMobileLinkClick={() => mobileOpen && setMobileOpen(false)}
+          collectionHandle={collectionHandle}
+        />
       </MobileNav>
     </>
   )

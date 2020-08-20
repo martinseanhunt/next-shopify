@@ -1,13 +1,15 @@
 import { useQuery } from '@apollo/client'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
 import styled from 'styled-components'
 
 import apolloErrorHandler from '../../util/apolloErrorHandler'
 import { COLLECTIONS_QUERY } from '../Collection/Collection'
 
-const Navigation = ({ mobile, mobileOpen }) => {
-  const { query: { collectionHandle } } = useRouter()
+const Navigation = ({ 
+  mobile, 
+  mobileOpen, 
+  collectionHandle
+}) => {
   const { data } = useQuery(COLLECTIONS_QUERY, { onError: apolloErrorHandler })
   const collections = data && data.collections.edges
 
