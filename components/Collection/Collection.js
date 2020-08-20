@@ -17,6 +17,8 @@ const Collection = ({ handle }) => {
       onError: apolloErrorHandler
     }
   )
+
+  console.log(data)
   
   // Silently refetch the query after initial render so we show fresh data even
   // While a build is processing but not complete.
