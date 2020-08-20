@@ -84,6 +84,7 @@ const CartDetails = ({
         webUrl={webUrl}
         lineItemsSubtotalPrice={lineItemsSubtotalPrice}
         loadingCheckoutLink={loadingCheckoutLink}
+        onCheckountClick={() => setLoadingCheckoutLink(true)}
         updateCartLoading={updateCartLoading}
       />
     </DetailsContainer>

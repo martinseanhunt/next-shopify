@@ -5,11 +5,12 @@ const CheckoutButton = ({
   webUrl,
   loadingCheckoutLink,
   updateCartLoading,
-  lineItemsSubtotalPrice
+  lineItemsSubtotalPrice,
+  onCheckountClick
 }) => (
   <Checkout 
     href={webUrl ? webUrl: '#'}
-    onClick={() => setLoadingCheckoutLink(true)}
+    onClick={onCheckountClick}
   >
     {loadingCheckoutLink ? '...' : (
       <>
