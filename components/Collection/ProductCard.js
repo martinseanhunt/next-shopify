@@ -2,8 +2,8 @@ import { gql } from '@apollo/client'
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import ProductImage from './ProductImage'
-import formatMoney from '../util/formatMoney'
+import ProductImage from '../ProductImage'
+import formatMoney from '../../util/formatMoney'
 
 const ProductCard = ({ product, collection }) => {  
   const { 
@@ -16,7 +16,6 @@ const ProductCard = ({ product, collection }) => {
 
   const image = images.edges.length && images.edges[0].node
   
-  // TODO: tidy up
   const price = minVariantPrice.amount === maxVariantPrice.amount
     ? `${formatMoney(minVariantPrice)}`
     : `${formatMoney(minVariantPrice)} - ${formatMoney(maxVariantPrice)}`

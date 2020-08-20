@@ -1,7 +1,10 @@
 import { useRouter } from 'next/router'
 
 import { initWithQueries, queryForStaticPaths } from '../lib/apolloClient'
-import Collection, { COLLECTION_QUERY, COLLECTIONS_QUERY } from '../components/Collection'
+import Collection, { 
+  COLLECTION_QUERY, 
+  COLLECTIONS_QUERY 
+} from '../components/Collection/Collection'
 
 const CollectionPage = () => {
   const router = useRouter()

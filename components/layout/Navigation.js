@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import styled from 'styled-components'
 
-import { COLLECTIONS_QUERY } from '../Collection'
+import { COLLECTIONS_QUERY } from '../Collection/Collection'
 
 const Navigation = ({ mobile, mobileOpen }) => {
   const { data } = useQuery(COLLECTIONS_QUERY)

@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router'
 
 import { initWithQueries, queryForStaticPaths } from '../../lib/apolloClient'
-import { COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY } from '../../components/Collection'
+import { 
+  COLLECTIONS_WITH_PRODUCT_HANDLES_QUERY 
+} from '../../components/Collection/Collection'
 import ProductDetails, { 
   PRODUCT_BY_HANDLE_QUERY, 
   PRODUCT_BY_HANDLE_DEFAULTS 

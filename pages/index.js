@@ -1,7 +1,9 @@
 import Link from 'next/link'
 
 import { initWithQueries } from '../lib/apolloClient'
-import Collection, { COLLECTION_QUERY } from '../components/Collection'
+import Collection, { 
+  COLLECTION_QUERY 
+} from '../components/Collection/Collection'
 
 const collectionHandle = 'featured'
 
