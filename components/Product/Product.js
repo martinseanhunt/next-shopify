@@ -1,6 +1,7 @@
 import { useQuery, gql } from '@apollo/client'
 import Head from 'next/head'
 
+import apolloErrorHandler from '../../util/apolloErrorHandler'
 import useRefetchQuery from '../../hooks/useRefetchQuery'
 
 import BreadCrumbs from './BreadCrumbs'
@@ -11,7 +12,8 @@ const Product = ({ productHandle, collectionHandle }) => {
     variables: { 
       ...PRODUCT_BY_HANDLE_DEFAULTS,
       handle: productHandle
-    }
+    },
+    onError: apolloErrorHandler
   })
 
   useRefetchQuery(refetchProduct)

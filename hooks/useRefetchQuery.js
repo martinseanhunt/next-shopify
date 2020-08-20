@@ -1,9 +1,9 @@
-import { useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 
-// Use this hook to trigger a silent refetch after the initial render of a given component.
-// and whenever the path changes (i.e. subsequent visits to the same page)
-// This way we know the data is up to date for the current user.
+// Use this hook to trigger a silent refetch after the initial render of a given
+// component and whenever the path changes (i.e. subsequent visits to the same 
+// page). This way we know the data is up to date for the current user.
 const useRefetchQuery = refetch => {
   const { asPath } = useRouter()
 

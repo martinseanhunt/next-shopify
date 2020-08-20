@@ -1,6 +1,7 @@
 import { useMutation } from '@apollo/client'
 import styled from 'styled-components'
 
+import apolloErrorHandler from '../../util/apolloErrorHandler'
 import { useCartContext } from '../../contexts/cart/CartContext'
 import { CREATE_CART_MUTATION, UPDATE_CART_MUTATION } from '../Cart/Cart'
 
@@ -14,17 +15,19 @@ const AddToCart = ({
   const [createCart, { loading: createCartLoading }] = useMutation(
     CREATE_CART_MUTATION,
     { 
+      onError: apolloErrorHandler,
       onCompleted: data => 
         dispatch({ 
           type: 'CREATE_CART',
           payload: data.checkoutCreate.checkout 
-        }) 
+        })
     }
   )
 
   const [updateCart, { loading: updateCartLoading }] = useMutation(
     UPDATE_CART_MUTATION,
     { 
+      onError: apolloErrorHandler,
       onCompleted: data => 
         dispatch({ 
           type: 'UPDATE_CART',

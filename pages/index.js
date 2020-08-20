@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 import { initWithQueries } from '../lib/apolloClient'
 import Collection, { 
   COLLECTION_QUERY 

@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-
 import formatMoney from '../../util/formatMoney'
 
 const CheckoutButton = ({

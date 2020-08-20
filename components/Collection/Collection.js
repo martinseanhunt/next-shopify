@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import styled from 'styled-components'
 import Head from 'next/head'
 
+import apolloErrorHandler from '../../util/apolloErrorHandler'
 import useRefetchQuery from '../../hooks/useRefetchQuery'
 import ProductCard, { PRODUCT_CARD_FRAGMENT } from './ProductCard'
 import Hero from '../common/Hero'
@@ -11,7 +12,10 @@ const Collection = ({ handle }) => {
   // and no network request will be made.
   const { data, refetch } = useQuery(
     COLLECTION_QUERY, 
-    { variables: { handle } }
+    { 
+      variables: { handle },
+      onError: apolloErrorHandler
+    }
   )
   
   // Silently refetch the query after initial render so we show fresh data even

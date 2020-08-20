@@ -28,7 +28,7 @@ const Crumbs = styled.span`${({ theme }) => `
 
   b {
     font-weight: ${theme.fonts.weights.bold};
-    color: ${theme.colors.darkGrey}
+    color: ${theme.colors.darkGrey};
   }
 `}`
 
