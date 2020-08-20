@@ -8,17 +8,21 @@ import BreadCrumbs from './BreadCrumbs'
 import ProductDetails from './ProductDetails'
 
 const Product = ({ productHandle, collectionHandle }) => {
-  const { data, refetch: refetchProduct } = useQuery(PRODUCT_BY_HANDLE_QUERY, { 
-    variables: { 
-      ...PRODUCT_BY_HANDLE_DEFAULTS,
-      handle: productHandle
-    },
-    onError: apolloErrorHandler
-  })
+  const { data, loading, refetch: refetchProduct } = useQuery(
+    PRODUCT_BY_HANDLE_QUERY, 
+      { 
+      variables: { 
+        ...PRODUCT_BY_HANDLE_DEFAULTS,
+        handle: productHandle
+      },
+      onError: apolloErrorHandler
+    }
+  )
 
   useRefetchQuery(refetchProduct)
 
   const product = data && data.productByHandle  
+  if(loading) return '...'
   if(!product) return <div>Product not found</div>
 
   return (

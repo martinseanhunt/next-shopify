@@ -10,15 +10,13 @@ import Hero from '../common/Hero'
 const Collection = ({ handle }) => {
   // Because we're using SSG initially this data will come from the cache 
   // and no network request will be made.
-  const { data, refetch } = useQuery(
+  const { data, refetch, loading } = useQuery(
     COLLECTION_QUERY, 
     { 
       variables: { handle },
       onError: apolloErrorHandler
     }
   )
-
-  console.log(data)
   
   // Silently refetch the query after initial render so we show fresh data even
   // While a build is processing but not complete.
@@ -35,6 +33,7 @@ const Collection = ({ handle }) => {
 
   const collection = data && data.collectionByHandle  
 
+  if(loading) return '...'
   if(!collection) return 'Collection not found'
 
   const products = collection && collection.products.edges
