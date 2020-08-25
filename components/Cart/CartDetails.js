@@ -68,17 +68,20 @@ const CartDetails = ({
   return (
     <DetailsContainer ref={cartDetailsRef}>
       <LineItems>
-        {lineItems.edges.map(({ node }) => (
-          <LineItem 
-            key={node.id}
-            item={node} 
-            onUpdateQuantity={onUpdateQuantity}
-            onDeleteItem={onDeleteItem}
-            updateCartLoading={updateCartLoading}
-            updatingItemId={updatingItemId}
-            deletingItemId={deletingItemId}
-          />
-        ))}
+        {lineItems.edges
+          .filter(({ node }) => !!node)
+          .map(({ node }) => (
+            <LineItem 
+              key={node.id}
+              item={node} 
+              onUpdateQuantity={onUpdateQuantity}
+              onDeleteItem={onDeleteItem}
+              updateCartLoading={updateCartLoading}
+              updatingItemId={updatingItemId}
+              deletingItemId={deletingItemId}
+            />
+          )
+        )}
       </LineItems>
       <CheckoutButton 
         webUrl={webUrl}
