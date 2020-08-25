@@ -46,7 +46,7 @@ export const useInitializeCartFromLocal = () => {
         variables: {
           checkoutId: localCart.id,
           lineItems: localCart.lineItems.edges
-          .filter(({ node }) => !!node)
+          .filter(({ node }) => !!node.variant)
           .map(({ node }) => ({
             variantId: node.variant.id,
             quantity: node.quantity

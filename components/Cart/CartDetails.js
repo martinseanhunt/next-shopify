@@ -69,7 +69,7 @@ const CartDetails = ({
     <DetailsContainer ref={cartDetailsRef}>
       <LineItems>
         {lineItems.edges
-          .filter(({ node }) => !!node)
+          .filter(({ node }) => !!node.variant)
           .map(({ node }) => (
             <LineItem 
               key={node.id}
